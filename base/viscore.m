@@ -10,11 +10,9 @@ function gui = viscore()
 
 name = 'lram viscore';
 if (isempty(findall(0,'Name',name)))
-    gui = viscore_init(name)
+    gui = viscore_init(name);
 else
-    % Put in extra stuff.
-    msg = 'It appears that there is already a visualizer core running.';
-    msgbox(msg);
+    error ('Please close all running viscore instances');
 end
 
 end
@@ -80,7 +78,6 @@ notify(core,'Update');
 end
 
 function ShutdownCore(hObject, eventdata)
-disp('Have a nice day!');
 core = get(hObject,'UserData');
 notify(core,'Shutdown');
 end
