@@ -43,11 +43,12 @@ handles.label = uicontrol(...
 
 core = VisualizerCore(name);
 set(fh,'UserData',core);
-
+set(fh,'DeleteFcn',@ShutdownCore);
 handles.filemenu = uimenu(fh,'Label','File');
 handles.loadmenu = uimenu(handles.filemenu,'Label','Load Settings','Callback',@LoadMenuFcn);
 handles.savemenu = uimenu(handles.filemenu,'Label','Save Settings','Callback',@SaveMenuFcn);
 guidata(fh,handles);
+
 gui = fh;
 
 LoadSettings(fh,'vis_settings.mat');
@@ -63,13 +64,23 @@ LoadSettings(figure, filename);
 end
 
 function SaveMenuFcn(hObject, eventdata)
-disp('Hello');
+menu = get(hObject,'Parent');
+fig = get(menu,'Parent');
+core = get(fig,'UserData');
+settings = core.settings;
+filename = uiputfile('.mat');
+save(filename,'-struct','settings');
+
 end
 
 function LoadSettings(figure, filename)
 core = get(figure,'UserData');
-disp(core);
 core.settings = load(filename);
-%notify(core,'Update');
-notify(core,'TestMessage');
+notify(core,'Update');
+end
+
+function ShutdownCore(hObject, eventdata)
+disp('Have a nice day!');
+core = get(hObject,'UserData');
+notify(core,'Shutdown');
 end

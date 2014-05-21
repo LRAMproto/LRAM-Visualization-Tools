@@ -22,7 +22,7 @@ function varargout = vis_control(varargin)
 
 % Edit the above text to modify the response to help vis_control
 
-% Last Modified by GUIDE v2.5 23-Apr-2014 15:12:34
+% Last Modified by GUIDE v2.5 21-May-2014 13:41:50
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -59,20 +59,14 @@ handles.displays = findall(0,'Name','white_background');
 % This is the configuration file. An option should be added to the
 % visualizer to load the file from the GUI.
 
-handles.eventUpdate = @eventUpdate;
-
-results = findall(0,'Name','lram viscore');
-guifig = results(1);
-if (numel(results) > 0)
-    core = get(guifig,'UserData');
-    handles.core = core;
-    handles.corelistener = addlistener(core,'Update',@handles.eventUpdate);
-end
-
-% Update handles structure
+%Standard Visualizer Core Functions
+handles.ViscoreUpdate = @ViscoreUpdate;
+handles.ViscoreShutdown = @ViscoreShutdown;
+handles.corelistener = -1; % Uninitialized
+handles.core = -1;
 guidata(hObject, handles);
-
-notify(core,'Update');
+handles = viscore_connect(hObject);
+guidata(hObject, handles);
 
 % UIWAIT makes vis_control wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
@@ -265,7 +259,7 @@ function FileMenu_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-function eventUpdate(hObject, eventdata)
+function ViscoreUpdate(hObject, eventdata)
     results = findall(0,'Name','vis_control');
 
     if (length(results)>0)
@@ -285,3 +279,16 @@ function doStuff(hObject, eventdata)
         handles.core.settings.plate_height = plate_height;
         notify(handles.core,'Update');
         guidata(fig,handles);
+
+
+% --- Executes during object deletion, before destroying properties.
+function figure1_DeleteFcn(hObject, eventdata, handles)
+% hObject    handle to figure1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+function ViscoreShutdown(hObject, eventdata)
+    results = findobj(0,'Name','vis_control');
+    fig = results(1);
+    delete(fig);
+

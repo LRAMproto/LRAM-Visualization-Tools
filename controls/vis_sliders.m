@@ -55,21 +55,29 @@ function vis_sliders_OpeningFcn(hObject, eventdata, handles, varargin)
 % Choose default command line output for vis_sliders
 
 handles.output = hObject;
-handles.eventUpdate = @eventUpdate;
 handles.sliderlh = addlistener(handles.robot_plate_height_control,'ContinuousValueChange',@doStuff);
 
-results = findall(0,'Name','lram viscore');
-guifig = results(1);
-if (numel(results) > 0)
-    core = get(guifig,'UserData');
-    handles.core = core;
-    handles.corelistener = addlistener(core,'Update',@handles.eventUpdate);
-end
+%Standard Visualizer Core Functions
+handles.ViscoreUpdate = @ViscoreUpdate;
+handles.ViscoreShutdown = @ViscoreShutdown;
+handles.corelistener = -1; % Uninitialized
+handles.core = -1;
+guidata(hObject, handles);
+handles = viscore_connect(hObject);
+
+% guidata(hObject, handles);
+% results = findall(0,'Name','lram viscore');
+% guifig = results(1);
+% if (numel(results) > 0)
+%     core = get(guifig,'UserData');
+%     handles.core = core;
+%     handles.corelistener = addlistener(core,'Update',@handles.ViscoreUpdate);
+% end
 
 % Update handles structure
 guidata(hObject, handles);
-notify(core,'Update');
-
+disp('Core Handles for Sliders');
+disp(handles.core);
 
 % UIWAIT makes vis_sliders wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
@@ -132,7 +140,7 @@ function figure1_WindowButtonMotionFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-function eventUpdate(hObject, eventdata)
+function ViscoreUpdate(hObject, eventdata)
     results = findall(0,'Name','vis_sliders');
 
     if (length(results)>0)
@@ -152,3 +160,7 @@ function doStuff(hObject, eventdata)
         notify(handles.core,'Update');
         guidata(fig,handles);
     
+function ViscoreShutdown(hObject, eventdata)
+    results = findobj(0,'Name','vis_sliders');
+    fig = results(1);
+    delete(fig);

@@ -62,10 +62,6 @@ handles.plate_height = 0;
 handles.target_height = 0;
 handles.listening = 0;
 
-handles.eventUpdate = @eventUpdate;
-results = findall(0,'Name','lram viscore');
-core = get(results(1),'UserData');
-handles.corelistener = addlistener(core,'Update',@handles.eventUpdate);
 
 handles.trajectory = plot(handles.display_axis,1,1,'<-');
 %handles.trajectory_v = quiver(handles.display_axis,1,1,1,1);
@@ -95,8 +91,17 @@ handles.target_bar = makeCirclePatch(handles,r,x,y);
 set(handles.target_bar,'FaceColor',[1,1,1]);
 handles.moveRobotPlateTo = @moveRobotPlateTo;
 
+%Standard Visualizer Core Functions
+handles.ViscoreUpdate = @ViscoreUpdate;
+handles.ViscoreShutdown = @ViscoreShutdown;
+handles.corelistener = -1; % Uninitialized
+handles.core = -1;
 guidata(hObject, handles);
-notify(core,'Update');
+handles = viscore_connect(hObject);
+guidata(hObject, handles);
+disp('Core handle for vis_gui');
+disp(handles.core);
+
 %updateDisplay(hObject, eventdata, handles);
 
 
@@ -330,7 +335,7 @@ set(handles.ball,'FaceColor',newcolor)
 
 % The following function updates the GUI
 
-function eventUpdate(hObject, eventdata)
+function ViscoreUpdate(hObject, eventdata)
     results = findall(0,'Name','vis_gui');
     if (length(results)>0)
         fig = results(1);
@@ -344,3 +349,8 @@ function eventUpdate(hObject, eventdata)
         moveRobotPlateTo(handles,-handles.plate_height);
         guidata(fig, handles);
     end
+    
+function ViscoreShutdown(hObject, eventdata)
+    results = findobj(0,'Name','vis_gui');
+    fig = results(1);
+    delete(fig);
