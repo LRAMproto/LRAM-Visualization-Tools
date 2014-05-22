@@ -76,8 +76,6 @@ handles = viscore_connect(hObject);
 
 % Update handles structure
 guidata(hObject, handles);
-disp('Core Handles for Sliders');
-disp(handles.core);
 
 % UIWAIT makes vis_sliders wait for user response (see UIRESUME)
 % uiwait(handles.figure1);

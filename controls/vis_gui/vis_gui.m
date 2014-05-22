@@ -99,14 +99,10 @@ handles.core = -1;
 guidata(hObject, handles);
 handles = viscore_connect(hObject);
 guidata(hObject, handles);
-disp('Core handle for vis_gui');
-disp(handles.core);
-
-%updateDisplay(hObject, eventdata, handles);
-
 
 % UIWAIT makes vis_gui wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
+
 %move_to_monitor_2(hObject,handles)
 
 
