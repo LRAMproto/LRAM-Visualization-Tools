@@ -1,0 +1,7 @@
+All programs connect to the core application, 'viscore'. This connection allows the core program to broadcast all changes made to the state of the robot to ancillary programs via event listeners. Hence, whenever a program modifies the state of the visualizer:
+
+- The program accesses the 'settings' structure of the VisualizerCore object in the UserData field of viscore.
+- The program makes whatever modification is necessary, then notifies the visualizer core of the update event.
+- When the Update event is triggered, all programs will respond in their own way.
+
+- Programs can additionally respond a certain way when the core program shuts down. One does not have to do anything, but a shutdown function ideally should be defined.
