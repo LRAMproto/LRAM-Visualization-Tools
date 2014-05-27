@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<robot name="lram caster">
+    <link name="base_link">
+        <visual>
+            <geometry>
+                <box size="0.31 0.25 0.095"/>
+            </geometry>
+        </visual>
+    </link>
+
+    <link name="arm">
+        <visual>
+            <geometry>
+                <box size="0.025 0.025 0.435"/>
+            </geometry>
+        </visual>
+    </link>
+
+    <joint name="robot_arm" type="continuous">
+        <axis xyz="0 0 0"/>
+        <parent link="base_link"/>
+        <child link="arm"/>
+        <origin rpy="0 0 0" xyz = "0 0 0" />
+    </joint>
+</robot>
