@@ -1,0 +1,29 @@
+This is a place where it is helpful to list my ideas for the future development of this project.
+
+1) Parse a URDF file to load the robot's basic structure.
+
+Description: We can make a basic model of the Caster in URDF format using primatives as visual elements. We can create an interpreter in MATLAB which can extract key information about the robot, which includes information on joints.
+
+Pros:
+- URDF format already defined
+- URDF model can be readable in the rviz package of ROS
+- URDF uses XML, which can be easily parsed by MATLAB.
+- Once set up, making modifications would be straightforward.
+- Interpreting the URDF can be seperate from displaying it. Hence, we can design a system whichs renders a two-dimensional representation, but expand it to a three-dimensional representation later on.
+
+Cons: 
+- Additional development time for brand-new data structures.
+- May be more complicated than initial application requires.
+
+Resolution
+05/27/2014
+- Build an initial visualizer without the URDF interpreter, but keep this approach in mind for future development.
+
+2) Set up animation as a plugin:
+
+Description: Since (as of 5/27/2014) all components modify data from a 'master' program, we can have a program which continuously modifies this data such that we can view it as an animation. Going further, we could possibly render animations in popular video formats such as avi for use in presentations.
+
+Pros:
+- Feasible with the current implementation without making extensive modifications to existing structure.
+Cons:
+- Additional time needed to learn video rendering.
