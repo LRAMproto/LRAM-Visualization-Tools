@@ -1,25 +1,32 @@
 <?xml version="1.0"?>
 <robot name="lram caster">
-    <link name="base_link">
-        <visual>
-            <geometry>
-                <box size="0.31 0.25 0.095"/>
-            </geometry>
-        </visual>
-    </link>
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size="0.31 0.25 0.095"/>
+      </geometry>
+      <material name="grey1">
+        <color rgba=".3 .3 .3 1"/>
+      </material>
+    </visual>
+  </link>
 
-    <link name="arm">
-        <visual>
-            <geometry>
-                <box size="0.025 0.025 0.435"/>
-            </geometry>
-        </visual>
-    </link>
+  <link name="arm">
+    <visual>
+      <geometry>
+        <box size=".025 .025 .435"/>
+      </geometry>
+	<origin xyz="0.0 0.0125 -0.2175"/>
+      <material name="grey2">
+        <color rgba=".6 .6 .6 1"/>
+      </material>
+    </visual>
+  </link>
 
-    <joint name="robot_arm" type="continuous">
-        <axis xyz="0 0 0"/>
-        <parent link="base_link"/>
-        <child link="arm"/>
-        <origin rpy="0 0 0" xyz = "0 0 0" />
-    </joint>
+  <joint name="head_swivel" type="continuous">
+    <parent link="base_link"/>
+    <child link="arm"/>
+    <axis xyz="0 1 0"/>
+    <origin xyz="0.0 0.125 0"/>
+  </joint>
 </robot>
