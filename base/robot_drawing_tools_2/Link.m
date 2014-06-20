@@ -7,13 +7,18 @@ classdef Link < hgsetget
         width = 0;
         height = 0;
         origin = [0,0];
+        origin_angle = 0;
+        origin_angle_pivot_point = [0 0];
         current_position = [0 0];
         radius = 0;
         vertices = struct('xdata',[],'ydata',[]);
+        current_vertices = struct('xdata',[],'ydata',[]);
         cap_pct = 0;
         num_points = 100;
         fillcolor = [0 0 0];
         visual = [];
+        
+
     end
     
     methods

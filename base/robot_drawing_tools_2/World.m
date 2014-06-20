@@ -39,7 +39,7 @@ classdef World
                     end
                     if strcmp(obj.links(j).name, obj.joints(i).child)
                         child_found = 1;
-                        obj.joints(i).childdata = obj.links(i);
+                        obj.joints(i).childdata = obj.links(j);
                     end
                     if parent_found == 1 && child_found == 1
                         break;
@@ -57,6 +57,31 @@ classdef World
                 end
             end
 
+        end
+
+        function UpdateVisual(obj)
+            for i = 1:length(obj.joints)
+                child = obj.joints(i).childdata;
+                xdata = child.vertices.xdata;
+                ydata = child.vertices.ydata;
+                
+                [xdata,ydata] = matrix_rotate(xdata,ydata,child.origin_angle,child.origin_angle_pivot_point);
+                xdata = xdata + child.origin(1);
+                ydata = ydata + child.origin(2);
+                
+                cj = obj.joints(i);
+
+                while ~isempty(cj)
+                    [xdata,ydata] = matrix_rotate(xdata',ydata',cj.angle,cj.pivot_point);
+                     xdata = xdata + cj.origin(1);
+                     ydata = ydata + cj.origin(2);                    
+%                      xdata = xdata+cj.parentdata.origin(1);
+%                      ydata = ydata+cj.parentdata.origin(2);
+                    cj = cj.parentjoint;
+                end
+                
+                set(child.visual,'XData',xdata,'YData',ydata);
+            end
         end
         
         function LoadAll(obj)
@@ -76,7 +101,7 @@ classdef World
                     'FaceColor',obj.links(i).fillcolor);
                 set(obj.links(i),'visual',patchdata);
             end        
-            
+            obj.UpdateVisual();                            
         end
 %% Display Functions        
         function DisplayJoints(obj)

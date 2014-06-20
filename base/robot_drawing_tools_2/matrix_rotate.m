@@ -5,7 +5,7 @@ if length(origin) ~= 2
     error('Origin must be a 2-0dimensional vector of x and y.');
 end
 
-%fprintf('X origin: %f, y Origin: %f\n',origin(1),origin(2));
+fprintf('X origin: %f, y Origin: %f\n',origin(1),origin(2));
 
 x = X'-origin(1);
 y = Y'-origin(1);
@@ -16,7 +16,8 @@ rot = [...
     costheta sintheta;...
     -sintheta costheta;...
     ];
-result = rot*[x;y];
+dims = [x;y];
+result = rot*dims;
 Xnew = result(1,:)+origin(1);
 Ynew = result(2,:)+origin(2);
 

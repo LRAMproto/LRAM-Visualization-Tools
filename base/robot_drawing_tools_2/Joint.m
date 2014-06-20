@@ -9,11 +9,12 @@ classdef Joint < hgsetget
         parent
         child
         origin = [0 0];
+        pivot_point = [0, 0];
         angle = 0;
         % Stores runtime data on Link Objects
         parentdata
         childdata
-        level = 0;
+        % Stores name of parent object for positioning
         parentjoint;
         
     end
