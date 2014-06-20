@@ -65,6 +65,7 @@ function test2()
         'width',(1*2.54/100),...
         'height',(18*2.54/100),...
         'origin',[0,(9*2.54/100)],...
+        'cap_pct',0.0,...
         'fillcolor',[0.3 0.3 0.3]...
         );
     
@@ -128,20 +129,33 @@ function test2()
         'origin',[0,(18*2.54/100)],...
         'angle',-1.3...
         )
+        
+    ball = Link();
+    set(ball,...
+        'name','Ball',...
+        'type','Circle',...
+        'radius',0.125,...
+        'origin',[1,1]...
+        );
     
     %% Collects
 
     joints = [robot_plate_to_frame_joint, target_plate_to_frame_joint, box_to_plate_joint, arm_joint];
-    links = [frame, target_plate, robot_plate, base, arm];
+    links = [frame, target_plate, robot_plate, base, arm, ball];
 
-    joints = [robot_plate_to_frame_joint, target_plate_to_frame_joint, box_to_plate_joint, arm_joint,elbow_joint];
-    links = [frame, target_plate, robot_plate, base, arm, elbow];
+    %joints = [robot_plate_to_frame_joint, target_plate_to_frame_joint, box_to_plate_joint, arm_joint,elbow_joint];
+    %links = [frame, target_plate, robot_plate, base, arm, elbow];
     
     w = World(ax,links,joints);
     w.LoadAll();
     w.DisplayAll();
-    %target_plate.MoveTo([(12.5*2.54/100), 1]);
-    %robot_plate.MoveTo([3-(12.5*2.54/100), 1]);
+    for i=0:-0.01:-1
+        robot_plate_to_frame_joint.MoveY(i);
+        arm_joint.Rotate(i*10);
+        elbow_joint.Rotate(i*10);
+        w.UpdateVisual;
+        pause(0.001);
+    end
 end
 
 function [fig, ax] = MakeDisplay()

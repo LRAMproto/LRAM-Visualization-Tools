@@ -10,6 +10,7 @@ classdef Joint < hgsetget
         child
         origin = [0 0];
         pivot_point = [0, 0];
+        position = [0 0];
         angle = 0;
         % Stores runtime data on Link Objects
         parentdata
@@ -26,6 +27,14 @@ classdef Joint < hgsetget
             else
                 error('Joint name must be a string');
             end
+        end
+        
+        function Rotate(obj, theta)
+            obj.angle = theta;
+        end
+        
+        function MoveY(obj,y)
+            obj.position = [obj.position(1),y];
         end
         
         function UpdateJointAngle(joint,angle)

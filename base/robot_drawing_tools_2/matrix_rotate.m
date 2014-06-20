@@ -5,7 +5,7 @@ if length(origin) ~= 2
     error('Origin must be a 2-0dimensional vector of x and y.');
 end
 
-fprintf('X origin: %f, y Origin: %f\n',origin(1),origin(2));
+%fprintf('X origin: %f, y Origin: %f\n',origin(1),origin(2));
 
 x = X'-origin(1);
 y = Y'-origin(1);

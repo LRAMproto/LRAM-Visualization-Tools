@@ -37,7 +37,7 @@ classdef Link < hgsetget
                         obj.vertices.ydata = custom_y;
                     end                   
                 case 'Rectangle'
-                    [obj.vertices.xdata, obj.vertices.ydata] = squashed_rectangle_continuous(obj.width,+ obj.height, obj.cap_pct, obj.num_points);
+                    [obj.vertices.xdata, obj.vertices.ydata] = squashed_rectangle_continuous(obj.width, obj.height, obj.cap_pct, obj.num_points);
                 case 'Circle'
                     [obj.vertices.xdata,obj.vertices.ydata] = squashed_rectangle_continuous(obj.radius*2, obj.radius*2, 1, obj.num_points);
             end

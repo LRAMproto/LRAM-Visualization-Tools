@@ -74,7 +74,9 @@ classdef World
                 while ~isempty(cj)
                     [xdata,ydata] = matrix_rotate(xdata',ydata',cj.angle,cj.pivot_point);
                      xdata = xdata + cj.origin(1);
-                     ydata = ydata + cj.origin(2);                    
+                     ydata = ydata + cj.origin(2);
+                     xdata = xdata + cj.position(1);
+                     ydata = ydata + cj.position(2);
 %                      xdata = xdata+cj.parentdata.origin(1);
 %                      ydata = ydata+cj.parentdata.origin(2);
                     cj = cj.parentjoint;
