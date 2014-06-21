@@ -22,7 +22,32 @@ classdef Link < hgsetget
     end
     
     methods
-        function MoveTo(obj,destination)
+        % set variables
+        
+        function obj = set.radius(obj,val)
+            if val < 0
+                error('Radius must be zero or greater.');
+            end
+            obj.radius = val;
+            set(obj,'width',val*2);
+            set(obj,'height',val*2);
+        end
+
+        function obj = set.width(obj,val)
+            if val < 0
+                error('Width must be zero or greater.');
+            end
+            obj.width = val;
+        end        
+
+        function obj = set.height(obj,val)
+            if val < 0
+                error('Height must be zero or greater.');
+            end
+            obj.height = val;
+        end        
+        
+        function MoveTo(obj,destination) % Deprecated.
             obj.current_position = destination;
             set(obj.visual,...
                 'XData',obj.vertices.xdata+obj.current_position(1),...
@@ -30,6 +55,9 @@ classdef Link < hgsetget
         end
         
         function GeneratePoints(obj,varargin)
+            % Generates a set default set of coordinates for the link out
+            % of shape data.
+
             switch obj.type
                 case 'Custom'
                     if length(varargin) == 2;

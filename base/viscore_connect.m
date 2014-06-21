@@ -7,16 +7,14 @@ function handles = viscore_connect(guifcn)
 %
 % GUIFCN (figure) = handle of GUI object.
 % Tries to find the viscore GUI
-results = findall(0,'Name','lram viscore');
-if (numel(results) == 0)
-    error('viscore has not been initialized.');
-else
+
+    core = getCore();
     handles = guidata(guifcn);
     fprintf('Connecting gui function [%s] to viscore\n',get(guifcn,'Name'));
-    handles.core = get(results(1),'UserData');
+    handles.core = core;
     handles.corelistener = addlistener(handles.core,'Update',@handles.ViscoreUpdate);
     handles.shutdownlistener = addlistener(handles.core,'Shutdown',@handles.ViscoreShutdown);
     notify(handles.core,'Update');
-end
+    guidata(guifcn, handles);
 end
 

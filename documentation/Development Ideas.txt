@@ -18,6 +18,9 @@ Cons:
 Resolution
 05/27/2014
 - Build an initial visualizer without the URDF interpreter, but keep this approach in mind for future development.
+06/19/2014
+
+- I have decided not to parse URDF for the visualizer, since a), URDF is designed for 3D systems, and b), simpler to load links, joints, etc. inside their own matlab functions.
 
 2) Set up animation as a plugin:
 
@@ -27,3 +30,8 @@ Pros:
 - Feasible with the current implementation without making extensive modifications to existing structure.
 Cons:
 - Additional time needed to learn video rendering.
+
+Resolution:
+
+06/20/2014
+-Will investigate it when the initial program is complete.
