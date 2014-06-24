@@ -69,6 +69,7 @@ classdef VisualizerPlugin < hgsetget
 
             if ~isempty(obj.update_fcn)
                 % execute assigned shutdown function
+                obj.update_fcn(core, eventdata);
             end
             
         end
@@ -80,6 +81,7 @@ classdef VisualizerPlugin < hgsetget
             
             if ~isempty(obj.shutdown_fcn)
                 % execute assigned shutdown function
+                obj.shutdown_fcn(core, eventdata);
             end           
             
         end

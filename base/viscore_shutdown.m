@@ -1,8 +1,7 @@
-function viscore_shutdown(core)
+function viscore_shutdown(program_handles)
 
 % Sends the 'shutdown' signal.
-core.Shutdown();
-
+program_handles.core.Shutdown();
 
 end
 

@@ -15,8 +15,6 @@ function handles = viscore_connect(guifcn,core)
     handles = guidata(guifcn);
     fprintf('Connecting gui function [%s] to viscore\n',get(guifcn,'Name'));
     handles.core = core;
-    handles.corelistener = addlistener(handles.core,'UpdateEvent',@handles.ViscoreUpdate);
-    handles.shutdownlistener = addlistener(handles.core,'ShutdownEvent',@handles.ViscoreShutdown);
     notify(handles.core,'UpdateEvent');
     guidata(guifcn, handles);
 

@@ -1,10 +1,21 @@
-classdef World
+classdef World < hgsetget
 % A Class describing the world in which everything exists.
-    
+% Currently inherits from hgsetget.
+
     properties
+        %% Statically Defined Variables
+        
+        % Specifies name of world.
         name = 'World'
+
+        %% Runtime-Specific Variables
+        
+        % This is an axes object that has been created before the World
+        % is loaded.
         ax
+        % tracks all joint objects in runtime.
         joints
+        % tracks all link objects in runtime.
         links
     end
     
@@ -16,10 +27,21 @@ classdef World
             obj.joints = joints;
         end
         function MakeJointTree(obj)
-            % Makes a Joint Tree for use in positioning all objects.
+            % Makes a Joint tree for use in positioning all objects.
+            % (a Joint tree is just a set of joint objects connected in a
+            % hierarchical fashion, so that each joint can potentially have
+            % a parent joint).
+            %
+            % This allows an update function to apply transformations more
+            % efficiently.
+            
+            % For each joint object...
             for i = 1:length(obj.joints)
+                % Examine every joint object that has been loaded.
                 for j = 1:length(obj.joints)
+                    % If the joint's child is this joint's parent
                     if strcmp(obj.joints(j).child,obj.joints(i).parent)
+                        % Set the parent joint data appropriately.
                         obj.joints(i).parentjoint = obj.joints(j);
                     end
                 end                
@@ -60,6 +82,9 @@ classdef World
         end
 
         function UpdateVisual(obj)
+            % Updates the visual simulation.
+            % FIXME: Rename variables to be consistent with the Link and
+            % Joint class once these classes are altered appropriately.
             for i = 1:length(obj.joints)
                 child = obj.joints(i).childdata;
                 xdata = child.vertices.xdata;
@@ -72,27 +97,37 @@ classdef World
                 cj = obj.joints(i);
 
                 while ~isempty(cj)
+                    % FIXME: Verify that this transformation is accurate.
                     [xdata,ydata] = matrix_rotate(xdata',ydata',cj.angle,cj.pivot_point);
                      xdata = xdata + cj.origin(1);
                      ydata = ydata + cj.origin(2);
                      xdata = xdata + cj.position(1);
                      ydata = ydata + cj.position(2);
-%                      xdata = xdata+cj.parentdata.origin(1);
-%                      ydata = ydata+cj.parentdata.origin(2);
                     cj = cj.parentjoint;
                 end
+
+                % TODO: Add optimization step to avoid re-drawing the joint
+                % if it doesn't need to be altered.
                 
                 set(child.visual,'XData',xdata,'YData',ydata);
+
             end
         end
         
         function LoadAll(obj)
+            % Loads all runtime world variables.
+            
             % Link all Objects Together
             obj.LinkObjects();
+            
             % Establishes a Joint Tree for use of rendering everything in
             % the correct order
             obj.MakeJointTree();
-            % Loads the Simulation
+            
+            % Loads the visual aspect of the simulation. Note that this
+            % step positions all visual objects at the origin; UpdateVisual
+            % is responsible for putting everything back where it needs to
+            % be.
                        
             for i = 1:length(obj.links)
                 obj.links(i).GeneratePoints;
@@ -108,6 +143,7 @@ classdef World
         end
 %% Display Functions        
         function DisplayJoints(obj)
+            % Displays verbose data for all joints in a world.
             disp('Joints:');
             for i = 1:length(obj.joints)
                 disp(obj.joints(i));
@@ -115,6 +151,7 @@ classdef World
         end
         
         function DisplayLinks(obj)
+            % Displays verbose data of all joint objects in a world.
             disp('Links:');
             for i = 1:length(obj.links)
                 disp(obj.links(i));
@@ -122,6 +159,7 @@ classdef World
         end
         
         function DisplayAll(obj)
+            % Displays relevant data for all objects.
             obj.DisplayLinks;
             obj.DisplayJoints;
         end

@@ -2,9 +2,7 @@ classdef VisualizerCore < hgsetget
     % VisualizerCore version 1.0 (dev)
     % Core function for LRAM Visualizer. Manipulates base information on
     % the robot used by various sub-programs.
-    %
-    % This class is initially called by the GUI function, 'viscore'.
-    
+    %    
     properties
         name
         % Name for referring to a visualizer core object. Mainly for future
@@ -13,24 +11,31 @@ classdef VisualizerCore < hgsetget
         % Tracks relevant runtime data.
         program_handles
         
+        % Keeps track of the file from which settings are loaded.
         settingsfile = []
+
+        % Keeps track of the settings during runtime for the program.
         settings
-        interfaces = []
         
-        % TODO: refactor such that visualizer core is present inside of the
-        % system instead of outside of it.
-        
+        % Identifies all plugins connected to the core.
         plugins = [];
+        
+        % Identifies the handles of all open programs.
         gui_plugin_handles = [];
+        
+        
+        % Specifies whether the program will display debugging messages.
         debug_mode = 0;
     end
 
     methods
         function obj = VisualizerCore()
+            % Constructor method.
             obj.program_handles.core = obj;
         end
         
         function Shutdown(obj)
+            %Shuts down the Visualizer Core
             if (obj.debug_mode)
                 disp('## Core Shutting Down ##');
             end
@@ -39,6 +44,7 @@ classdef VisualizerCore < hgsetget
         
         
         function LoadSettings(obj)
+            % Loads settings to the Visualizer Core.
             if (obj.debug_mode)
                 disp('## Core loading stored settings ##');
             end
@@ -60,12 +66,12 @@ classdef VisualizerCore < hgsetget
         end
         
         function SaveSettingsTo(obj, filename)
+            % Saves a set of settings to a specified file path            
             if (obj.debug_mode)
                 fprintf('## Core saving settings to [%s]\n',filename);
             end            
-            % Saves a set of settings to a specified file path
             settings = obj.settings;
-            save(filename,'settings');
+            save(filename,'-struct','settings');
         end
         
     end
@@ -78,7 +84,7 @@ classdef VisualizerCore < hgsetget
         % any program that is being used by the visualizer, or at least
         % send a signal that the core object is no longer available.
         TestMessageEvent
-        % For testint event listeners. Nothing important should be done
+        % For testing event listeners. Nothing important should be done
         % with this.
     end   
 end
