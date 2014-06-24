@@ -35,3 +35,18 @@ Resolution:
 
 06/20/2014
 -Will investigate it when the initial program is complete.
+
+3) Modify architecture of the program such that everything runs within an encapsulated struct of all handles
+
+Pros:
+- Feasible with current system.
+- Easier to see all objects in the system
+- Finding objects will be much faster if we search a specific set of handles for given objects.
+
+Cons:
+- May take additional time to develop.
+- Every function would need to pass in a complete set of handles and interact with it in a different way.
+
+Resolution:
+- 06/23/2014
+- Refactoring code so it will follow this structure. 

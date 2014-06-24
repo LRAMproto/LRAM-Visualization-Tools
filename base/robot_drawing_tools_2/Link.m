@@ -16,6 +16,7 @@ classdef Link < hgsetget
         cap_pct = 0;
         num_points = 100;
         fillcolor = [0 0 0];
+        buttondownfcn = [];
         visual = [];
         
 

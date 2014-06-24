@@ -1,4 +1,4 @@
-function vis_sliders_2
+function vis_sliders_2(core)
 
 fig = figure(...
     'Name','Vis Sliders 2',...
@@ -42,7 +42,7 @@ handles.targetsliderlh = addlistener(handles.target_slider,'ContinuousValueChang
 set(handles.robot_peg_x_edit,'Callback',@ChangeValue);
 set(handles.robot_peg_y_edit,'Callback',@ChangeValue);
 
-handles.core = getCore();
+handles.core = core;
 
 handles.robot_plate_joint = findobj(handles.core.settings.joints,'name','Robot Plate to Frame Joint');
 handles.target_plate_joint = findobj(handles.core.settings.joints,'name','Target Plate to Frame Joint');
@@ -51,7 +51,7 @@ handles.box_to_plate = findobj(handles.core.settings.joints,'name','Box to Plate
 handles.ViscoreUpdate = @ViscoreUpdate;
 handles.ViscoreShutdown = @ViscoreShutdown;
 guidata(fig, handles);
-handles = viscore_connect(fig);
+handles = viscore_connect(fig,core);
 
 
 guidata(fig, handles);
@@ -74,12 +74,12 @@ function ChangeValue(hObject, eventdata)
         pegy = get(handles.robot_peg_y_edit,'String');
         handles.core.settings.misc.robot.PegPosition = [pegx, pegy];
         
-        notify(handles.core,'Update');
+        notify(handles.core,'UpdateEvent');
         guidata(fig,handles);
 end
 
 function ViscoreUpdate(core, eventdata)
-    results = findall(0,'Name','Vis Sliders 2');
+    results = findall(core.gui_plugin_handles,'Name','Vis Sliders 2');
     fig = results(1);
     handles = guidata(fig);
     

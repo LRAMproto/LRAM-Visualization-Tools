@@ -1,7 +1,7 @@
-function gui = viscore()
+function gui = viscore(program_handles)
 %% Visualizer Core for LRAM, version 1
 %
-% The following function loads a simple GUI 
+% The following function loads a simple figure window 
 % that allows multiple programs to modify simulation data at the same time.
 % 
 %
@@ -32,8 +32,8 @@ handles.label = uicontrol(...
     'BackgroundColor',[0.4 0.3 0.5],...
     'Parent',fh,...
     'Style','Text',...
-    'Position',[0,25,100,20],...
     'Units','Pixels',...
+    'Position',[0,25,100,20],...
     'String','Visualizer Core'...
     );
 
@@ -42,7 +42,9 @@ handles.label = uicontrol(...
 core = VisualizerCore(name);
 
 % Associates the UserData field of a matlab figure to the newly created
-% core object.
+% core object. You could alternately set it to be a figure handle, but this
+% would require several steps instead of one.
+
 set(fh,'UserData',core);
 
 % When the core program exits, all plugins should exit automatically.
@@ -77,7 +79,7 @@ function SaveMenuFcn(hObject, eventdata)
 % Saves information loaded in the visualizer.
 menu = get(hObject,'Parent');
 fig = get(menu,'Parent');
-core = get(fig,'UserData');
+core = getCore();
 settings = core.settings;
 filename = uiputfile('.mat');
 save(filename,'-struct','settings');
@@ -86,7 +88,7 @@ end
 
 function LoadSettings(figure, filename)
 % Load settings for the entire visualizer to use.
-core = get(figure,'UserData');
+core = getCore();
 core.settings = load(filename);
 notify(core,'Update');
 end

@@ -1,4 +1,4 @@
-function gui = vis_gui_revised()
+function gui = vis_gui_revised(core)
     gui = figure(...
         'Name','vis_gui_revised',...
         'MenuBar','none',...
@@ -23,23 +23,22 @@ function gui = vis_gui_revised()
         %axis off;
         grid on;
         guidata(gui, handles);
-    gui_init(gui);    
+    gui_init(gui,core);    
     
-function gui_init(gui)
+function gui_init(gui,core)
     handles = guidata(gui);
-    core = getCore();    
     settings = core.settings;    
     handles.world = World(handles.display_axis, settings.links, settings.joints);
     handles.world.LoadAll();
     handles.ViscoreUpdate = @ViscoreUpdate;
     handles.ViscoreShutdown = @ViscoreShutdown;
     guidata(gui, handles);
-    handles = viscore_connect(gui);
+    handles = viscore_connect(gui,core);
 
     guidata(gui, handles);
     
     function ViscoreUpdate(core, eventdata)
-        results = findobj(0,'Name','vis_gui_revised');
+        results = findobj(core.gui_plugin_handles,'Name','vis_gui_revised');
         fig = results(1);
         handles = guidata(fig);
         handles.world.UpdateVisual();
