@@ -1,6 +1,6 @@
 function h = viscore_tests()
 % The following tests the visualizer core program doing various things.
-h = test2();
+h = test3();
     
 end
 % This is deprecated; we no longer use the display function to load the
@@ -72,3 +72,24 @@ function h =  test2()
    
 end
 
+function h =  test3()
+
+    make_caster_default_settings();
+    
+    h.core = VisualizerCore();
+    
+    set(h.core,...
+        'settingsfile','caster_default_settings',...
+        'debug_mode',0);
+    
+    % Loads stored settings into the core settings object.
+    h.core.LoadSettings();    
+     
+   % Loads the Display
+   h.PluginTests(1) = VisualizerPlugin('Main Display Window',h.core);
+   set(h.PluginTests(1),'debug_mode',0);
+   set(h.PluginTests(1),'gui_fcn',@vis_gui_revised);
+   h.PluginTests(1).AddToPlugins();    
+   h.PluginTests(1).LoadGui();   
+   
+end

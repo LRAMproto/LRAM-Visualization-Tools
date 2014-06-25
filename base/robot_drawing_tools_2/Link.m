@@ -46,6 +46,9 @@ classdef Link < hgsetget
 
         fillcolor = [0 0 0];
         
+        % Sets the line width of all points. Must be greater than zero.
+        line_width = 0.5;
+        
         %% Runtime Defined Variables
         % Tracks where the runtime object
         visual = [];
@@ -58,11 +61,12 @@ classdef Link < hgsetget
         current_vertices = struct('xdata',[],'ydata',[]);
         previous_vertices = struct('xdata',[],'ydata',[]);
         
-        % TODO: Define behavior when one of the links is clicked.
-        % FIXME: Make buttondownfcn consistent with the rest of the program
-        % variables.
-        buttondownfcn = [];
+        %Define behavior when one of the links is clicked.
+
+        buttondown_fcn = [];
         
+        % World that the link belongs to.
+        world
 
     end
     
@@ -104,6 +108,9 @@ classdef Link < hgsetget
                         obj.vertices.ydata = custom_y;
                     end                   
                 case 'Rectangle'
+                    if (obj.cap_pct == 0)
+                        obj.num_points = 4;
+                    end
                     [obj.vertices.xdata, obj.vertices.ydata] = squashed_rectangle_continuous(obj.width, obj.height, obj.cap_pct, obj.num_points);
                 case 'Circle'
                     [obj.vertices.xdata,obj.vertices.ydata] = squashed_rectangle_continuous(obj.radius*2, obj.radius*2, 1, obj.num_points);

@@ -1,6 +1,10 @@
 classdef World < hgsetget
-% A Class describing the world in which everything exists.
-% Currently inherits from hgsetget.
+% A Class describing the world in which all joints and links are populated.
+% Note that there does not have to be one world per program; a control
+% interface using this object could have a different world than a display,
+% for example.
+%
+% Currently inherits from hgsetget to allow for set and get operations.
 
     properties
         %% Statically Defined Variables
@@ -25,6 +29,9 @@ classdef World < hgsetget
             obj.ax = ax;
             obj.links = links;
             obj.joints = joints;
+            for i= 1:length(links)
+                links(i).world = obj;
+            end
         end
         function MakeJointTree(obj)
             % Makes a Joint tree for use in positioning all objects.
@@ -135,8 +142,11 @@ classdef World < hgsetget
                     'Parent',obj.ax,...
                     'XData',obj.links(i).vertices.xdata+obj.links(i).origin(1),...
                     'YData',obj.links(i).vertices.ydata+obj.links(i).origin(2),...
-                    'EdgeAlpha',0,...
-                    'FaceColor',obj.links(i).fillcolor);
+                    'EdgeAlpha',1,...
+                    'ButtonDownFcn',obj.links(i).buttondown_fcn,...
+                    'FaceColor',obj.links(i).fillcolor,...
+                    'UserData',obj.links(i),...
+                    'LineWidth',obj.links(i).line_width);
                 set(obj.links(i),'visual',patchdata);
             end        
             obj.UpdateVisual();                            
