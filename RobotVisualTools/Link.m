@@ -45,6 +45,11 @@ classdef Link < hgsetget
         % black, but can be set to anything.
 
         fillcolor = [0 0 0];
+
+        visible = 'on';
+        
+        face_alpha = 1;
+        edge_alpha = 1;
         
         % Sets the line width of all points. Must be greater than zero.
         line_width = 0.5;
@@ -52,6 +57,7 @@ classdef Link < hgsetget
         %% Runtime Defined Variables
         % Tracks where the runtime object
         visual = [];
+
         % tracks the xdata and ydata of the visual patch object.
         vertices = struct('xdata',[],'ydata',[]);
         
@@ -119,6 +125,17 @@ classdef Link < hgsetget
         end
         % TODO: Delete deprecated Link methods to eliminate redundancy and
         % confusion.
+        
+        function ToggleVisibility(obj)
+            if strcmp(obj.visible,'off')
+                obj.visible = 'on';
+                set(obj.visual,'visible','on');
+            elseif strcmp(obj.visible,'on')
+                obj.visible = 'off';
+                set(obj.visual,'visible','off');
+            end
+            
+        end
         
         function MoveTo(obj,destination)
             % Moves the visual element of a link to a given point.

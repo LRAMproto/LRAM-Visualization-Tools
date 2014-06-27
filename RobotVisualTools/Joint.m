@@ -39,6 +39,9 @@ classdef Joint < hgsetget
         % Stores name of parent joint for positioning purposes.
         parentjoint;
         
+        % World in which it is populated.
+        world
+        
     end
     
     methods
@@ -54,14 +57,52 @@ classdef Joint < hgsetget
         
         function Rotate(obj, theta)
             % Rotates the joint to a specific angle.
-            % TODO: Add error checking to joint angle.
             obj.angle = theta;
+            
+            if ~isfloat(theta) && ~isequal(size(theta),[1 1]);
+                error('angle invalid');
+            end                        
+            % TODO: Add checking of joint limits?
+            
+            if ~isempty(obj.world) && obj.world.auto_update == 1
+                obj.world.UpdateVisual();
+            end
+            
         end
         
         function MoveY(obj,y)
+            if ~isfloat(y) && ~isequal(size(y),[1 1]);
+                error('y invalid');
+            end            
             % Moves a variable in the x position.
+            % TODO: Add checking of joint limits?            
             obj.position = [obj.position(1),y];
+            if ~isempty(obj.world) && obj.world.auto_update == 1
+                obj.world.UpdateVisual();
+            end
         end
+        
+        function MoveX(obj,x)
+            if ~isfloat(x) && ~isequal(size(x),[1 1]);
+                error('x invalid');
+            end                        
+            % Moves a variable in the x position.
+            % TODO: Add checking of joint limits?            
+            obj.position = [x,obj.position(2)];
+            if ~isempty(obj.world) && obj.world.auto_update == 1
+                obj.world.UpdateVisual();
+            end
+        end        
+        
+        function MoveXY(obj,x,y)
+            if isfloat([x,y]) && isequal(size([x,y]),[1,2])
+                obj.position = [x,y];
+                obj.world.UpdateVisual();
+            else
+                error('invalid input');
+            end
+        end
+        
         
         % TODO: Define MoveX, MoveTo(x,y) for joints.
 

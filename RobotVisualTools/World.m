@@ -21,6 +21,12 @@ classdef World < hgsetget
         joints
         % tracks all link objects in runtime.
         links
+        
+        % auto_update set to 1 to automatically update the world whenever a
+        % a joint is moved. If set to zero, you must call UpdateVisual
+        % manually. This might be helpful if you wanted to change a ton of
+        % variables before rendering.
+        auto_update = 1;
     end
     
     methods
@@ -31,6 +37,7 @@ classdef World < hgsetget
             obj.joints = joints;
             for i= 1:length(links)
                 links(i).world = obj;
+                joints(i).world = obj;                
             end
         end
         function MakeJointTree(obj)
@@ -96,7 +103,8 @@ classdef World < hgsetget
                 child = obj.joints(i).childdata;
                 xdata = child.vertices.xdata;
                 ydata = child.vertices.ydata;
-                
+                child.previous_vertices = child.current_vertices;                
+
                 [xdata,ydata] = matrix_rotate(xdata,ydata,child.origin_angle,child.origin_angle_pivot_point);
                 xdata = xdata + child.origin(1);
                 ydata = ydata + child.origin(2);
@@ -105,18 +113,24 @@ classdef World < hgsetget
 
                 while ~isempty(cj)
                     % FIXME: Verify that this transformation is accurate.
-                    [xdata,ydata] = matrix_rotate(xdata',ydata',cj.angle,cj.pivot_point);
+                    [xdata,ydata] = matrix_rotate(xdata,ydata,cj.angle,cj.pivot_point);
                      xdata = xdata + cj.origin(1);
                      ydata = ydata + cj.origin(2);
                      xdata = xdata + cj.position(1);
                      ydata = ydata + cj.position(2);
                     cj = cj.parentjoint;
                 end
+                child.current_vertices = struct('xdata',xdata,'ydata',ydata);
 
+                
+                if ~isequal(child.previous_vertices,child.current_vertices);
+                    disp('updating');
+                    set(child.visual,'XData',xdata,'YData',ydata);
+                end
+                
                 % TODO: Add optimization step to avoid re-drawing the joint
                 % if it doesn't need to be altered.
                 
-                set(child.visual,'XData',xdata,'YData',ydata);
 
             end
         end
@@ -138,13 +152,17 @@ classdef World < hgsetget
                        
             for i = 1:length(obj.links)
                 obj.links(i).GeneratePoints;
+                obj.links(i).previous_vertices = struct('xdata',obj.links(i).vertices.xdata,'ydata',obj.links(i).vertices.ydata);
+                obj.links(i).current_vertices = struct('xdata',obj.links(i).vertices.xdata,'ydata',obj.links(i).vertices.ydata);
                 patchdata = patch(...
                     'Parent',obj.ax,...
                     'XData',obj.links(i).vertices.xdata+obj.links(i).origin(1),...
                     'YData',obj.links(i).vertices.ydata+obj.links(i).origin(2),...
-                    'EdgeAlpha',1,...
+                    'Visible',obj.links(i).visible,...
                     'ButtonDownFcn',obj.links(i).buttondown_fcn,...
                     'FaceColor',obj.links(i).fillcolor,...
+                    'FaceAlpha',obj.links(i).face_alpha,...
+                    'EdgeAlpha',obj.links(i).edge_alpha,...
                     'UserData',obj.links(i),...
                     'LineWidth',obj.links(i).line_width);
                 set(obj.links(i),'visual',patchdata);

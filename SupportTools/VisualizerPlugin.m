@@ -56,7 +56,7 @@ classdef VisualizerPlugin < hgsetget
         
         function LoadGui(obj)
             % Loads the GUI pointed to by the plugin.
-            obj.gui_fcn(obj.core);
+            obj.gui_fcn(obj.core.program_handles);
         end
         
         

@@ -25,8 +25,8 @@ rot = [...
 dims = [x;y];
 result = rot*dims;
 
-Xnew = result(1,:)+origin(1);
-Ynew = result(2,:)+origin(2);
+Xnew = (result(1,:)+origin(1))';
+Ynew = (result(2,:)+origin(2))';
 
 end
 
