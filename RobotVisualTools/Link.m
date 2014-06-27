@@ -73,6 +73,8 @@ classdef Link < hgsetget
         
         % World that the link belongs to.
         world
+        
+        tracking_points = {};
 
     end
     
@@ -146,6 +148,15 @@ classdef Link < hgsetget
             set(obj.visual,...
                 'XData',obj.vertices.xdata+obj.current_position(1),...
                 'YData',obj.vertices.ydata+obj.current_position(2));            
+        end
+        
+        function AddTrackingPoint(obj,name,position)
+            newpoint = TrackingPoint();
+            set(newpoint,...
+                'name',name,...
+                'parent_link',obj,...
+                'local_position',position);
+            obj.tracking_points = [obj.tracking_points,newpoint];
         end
         
     end

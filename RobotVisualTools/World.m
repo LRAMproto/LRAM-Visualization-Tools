@@ -101,11 +101,23 @@ classdef World < hgsetget
             % Joint class once these classes are altered appropriately.
             for i = 1:length(obj.joints)
                 child = obj.joints(i).childdata;
+                tracking_points = child.tracking_points;
+
                 xdata = child.vertices.xdata;
                 ydata = child.vertices.ydata;
                 child.previous_vertices = child.current_vertices;                
 
                 [xdata,ydata] = matrix_rotate(xdata,ydata,child.origin_angle,child.origin_angle_pivot_point);
+                if ~isempty(tracking_points)
+                    for tp = 1:length(tracking_points)
+                        [tracking_points(tp).world_position(1),tracking_points(tp).world_position(2)] = ...
+                            matrix_rotate(tracking_points(tp).local_position(1),tracking_points(tp).local_position(2),...
+                            child.origin_angle,child.origin_angle_pivot_point);
+                        tracking_points(tp).world_position(1) = tracking_points(tp).local_position(1)+child.origin(1);
+                        tracking_points(tp).world_position(2) = tracking_points(tp).local_position(2)+child.origin(2);
+                    end
+                end
+                        
                 xdata = xdata + child.origin(1);
                 ydata = ydata + child.origin(2);
                 
@@ -118,7 +130,24 @@ classdef World < hgsetget
                      ydata = ydata + cj.origin(2);
                      xdata = xdata + cj.position(1);
                      ydata = ydata + cj.position(2);
+
+                    
+                if ~isempty(tracking_points)
+                for tp = 1:length(tracking_points)
+                    [...
+                        tracking_points(tp).world_position(1),...
+                        tracking_points(tp).world_position(2)...
+                        ] = ...
+                        matrix_rotate((tracking_points(tp).world_position(1)),(tracking_points(tp).world_position(2)),...
+                        cj.angle,cj.pivot_point);
+                        tracking_points(tp).world_position(1) = tracking_points(tp).world_position(1)+cj.origin(1);
+                        tracking_points(tp).world_position(2) = tracking_points(tp).world_position(2)+cj.origin(2);
+                        tracking_points(tp).world_position(1) = tracking_points(tp).world_position(1)+cj.position(1);
+                        tracking_points(tp).world_position(2) = tracking_points(tp).world_position(2)+cj.position(2);                        
+                end             
+                end
                     cj = cj.parentjoint;
+                
                 end
                 child.current_vertices = struct('xdata',xdata,'ydata',ydata);
 

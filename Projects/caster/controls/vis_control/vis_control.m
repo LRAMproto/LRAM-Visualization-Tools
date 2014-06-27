@@ -22,7 +22,7 @@ function varargout = vis_control(varargin)
 
 % Edit the above text to modify the response to help vis_control
 
-% Last Modified by GUIDE v2.5 26-Jun-2014 17:34:43
+% Last Modified by GUIDE v2.5 27-Jun-2014 15:52:20
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -56,12 +56,19 @@ function vis_control_OpeningFcn(hObject, eventdata, handles, varargin)
 handles.output = hObject;
 
 program_handles = varargin{1};
+% TODO: Re-Organize Programs into a logical fashion instead of a big mess.
+
 handles.core = program_handles.core;
 handles.target_plate = findobj(handles.core.settings.links,'name','Target Plate');
 handles.plugin = findobj(handles.core.plugins,'name','Control Panel');
 handles.target_plate_joint = findobj(handles.core.settings.joints,'name','Target Plate to Pivot Joint');
 handles.robot_arm_joint = findobj(handles.core.settings.joints,'name','Arm Joint');
+handles.robot_arm = handles.robot_arm_joint.childdata;
+handles.arm_pivot_tracking_point = findobj(handles.robot_arm.tracking_points,'name','Arm Pivot Point');
 handles.robot_plate_to_frame_joint = findobj(handles.core.settings.joints,'name','Robot Mounting Plate to Frame Joint');
+handles.ball_position_joint = findobj(handles.core.settings.joints,'name','Ball Position Joint');
+handles.target_pivot = findobj(handles.core.settings.links,'name','Target Plate Pivot');
+handles.target = findobj(handles.target_pivot.tracking_points,'name','Target Pivot Point');
 
 set(handles.plugin,'update_fcn',@ViscoreUpdate);
 set(handles.plugin,'shutdown_fcn',@ViscoreShutdown);    
@@ -69,7 +76,8 @@ set(handles.connection_status_display,'string','CONNECTED');
 
 handles.world = handles.core.settings.links(1).world;
 handles.display_axis = handles.world.ax;
-handles.trajectory = plot(handles.display_axis,1,1,'<-');
+set(handles.display_axis,'XLimMode','manual','YLimMode','manual');
+handles.trajectory = plot(handles.display_axis,[0 1 2 3],[0 0 0 0],'O-');
 handles.UpdateTrajectory = @UpdateTrajectory;
 % Update handles structure
 guidata(hObject, handles);
@@ -95,6 +103,12 @@ function target_plate_visibility_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of target_plate_visibility
+if get(hObject,'Value') == 0
+    set(handles.target_plate_angle_edit,'enable','off');
+end
+if get(hObject,'Value') == 1
+    set(handles.target_plate_angle_edit,'enable','on');
+end
 
 handles.target_plate.ToggleVisibility();
 
@@ -106,7 +120,10 @@ function robot_mounting_plate_height_edit_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of robot_mounting_plate_height_edit as text
 %        str2double(get(hObject,'String')) returns contents of robot_mounting_plate_height_edit as a double
-
+newheight = str2double(get(hObject,'String'));
+handles.core.settings.misc.robot.PlatePosition = newheight;
+set(handles.robot_plate_to_frame_joint,'position',handles.core.settings.misc.robot.PlatePositionFcn(newheight));
+notify(handles.core,'UpdateEvent');
 
 % --- Executes during object creation, after setting all properties.
 function robot_mounting_plate_height_edit_CreateFcn(hObject, eventdata, handles)
@@ -270,6 +287,11 @@ function spot_color_select_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns spot_color_select contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from spot_color_select
+contents = cellstr(get(hObject,'String'));
+disp(contents{get(hObject,'Value')});
+
+if (get(hObject,'value')==1)
+end
 
 
 % --- Executes during object creation, after setting all properties.
@@ -296,19 +318,22 @@ function ViscoreUpdate(core, eventdata)
 
         set(handles.target_plate_angle_edit,'String',get(handles.target_plate_joint,'angle'));
         set(handles.robot_arm_angle_edit,'String',get(handles.robot_arm_joint,'angle'));
-
-        vel = 15;
+        set(handles.robot_mounting_plate_height_edit,'String',handles.core.settings.misc.robot.PlatePosition);
+        set(handles.target_mounting_plate_height_edit,'String',handles.core.settings.misc.target.PlatePosition);
+        
+        vel = str2double(get(handles.robot_arm_velocity_edit,'String'));
         pos = get(handles.robot_arm_joint,'angle');
         pos = pos - pi;
         plate_height = get(handles.robot_plate_to_frame_joint,'position');
-        handles.UpdateTrajectory(handles,vel,pos,plate_height);
+        pivot_point = get(handles.arm_pivot_tracking_point,'world_position');
+        handles.UpdateTrajectory(handles,vel,pos,pivot_point);
         
         guidata(fig,handles);
 
     
 function ViscoreShutdown(core, eventdata)
 
-function UpdateTrajectory(handles,Vo,Ro,Plate_Height)
+function UpdateTrajectory(handles,Vo,Ro,pivot_point)
 % Plot data
 t = linspace(0,0.5,10);
 %theta = pi/3;                   % Release angle
@@ -317,27 +342,25 @@ theta = Ro;
 omega = [0 0 Vo];
 %omega = [0 0 2*pi];
 
-L   = .432;                     % length of arm
+L   = get(handles.robot_arm,'width')/2; % length of arm
 
 Rx  = L*sin(theta);
 Ry  = -L*cos(theta);
 Ro  = [Rx Ry 0];
 Vo  = cross(omega,Ro);
 
-Yo  = 1.33;                 % This is the position of the rotating axis
-Xo  = .33;
+Yo = pivot_point(2);
+Xo = pivot_point(1);
+%Yo  = 2;                 % This is the position of the rotating axis
+%Xo  = .33;
 %target = [2.49 1.36];           % Location of target from lower left
-target = [2.49 0];           % Location of target from lower left
-%[positions,velocities] = trajectory(t,Vo,Ro,Xo,Yo,target);
-[positions,velocities] = old_trajectory(t,Vo,Ro,Xo,Yo);
+%target = [2.49 0];           % Location of target from lower left
+target = handles.target.world_position;
+[positions,velocities] = trajectory(t,Vo,Ro,Xo,Yo,target);
+%[positions,velocities] = old_trajectory(t,Vo,Ro,Xo,Yo);
 set(handles.trajectory,'XData',positions(1,:),'YData',positions(2,:));
 set(handles.display_axis,'XLim',[-0.5 3.31],'YLim',[0 2.54]);
-set(handles.ball,...
-    'XData',handles.ball_x + positions(1,length(positions)),...
-    'YData',handles.ball_y + positions(2,length(positions))...
-    )
-drawnow
-
+handles.ball_position_joint.MoveXY(positions(1,length(positions)),positions(2,length(positions)));
 
 function robot_arm_angle_edit_Callback(hObject, eventdata, handles)
 % hObject    handle to robot_arm_angle_edit (see GCBO)
@@ -354,6 +377,29 @@ notify(handles.core,'UpdateEvent');
 % --- Executes during object creation, after setting all properties.
 function robot_arm_angle_edit_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to robot_arm_angle_edit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function robot_arm_velocity_edit_Callback(hObject, eventdata, handles)
+% hObject    handle to robot_arm_velocity_edit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of robot_arm_velocity_edit as text
+%        str2double(get(hObject,'String')) returns contents of robot_arm_velocity_edit as a double
+notify(handles.core,'UpdateEvent');
+
+% --- Executes during object creation, after setting all properties.
+function robot_arm_velocity_edit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to robot_arm_velocity_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
