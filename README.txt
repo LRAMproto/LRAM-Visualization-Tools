@@ -8,13 +8,20 @@ How to use this application:
 - Add the installation directory to the MATLAB path
 - Enter in the command console:
 
-ph = caster_startup;
+caster_startup;
+
+Everything within this program should run in an encapsulated fashion; once the GUIS are closed, all program information is erased.
+
+
+To run in a mode where you can see all of the program information, run:
+
+ph = caster_startup_debug
 
 The visualizer should load and the variable ph will store the program handles for the entire program. Through the program handles, you can view the data from the entire application and make adjustments if necessary.
 
-A future edition of caster_startup may get rid of the program handles, as this is only for debugging purposes.
 
 Coming in Summer 2014:
+
 - Animation Plugin for Visualizer
 
 For questions, contact David Rebhuhn at rebhuhnd@onid.orst.edu
