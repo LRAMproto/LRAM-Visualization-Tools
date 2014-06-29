@@ -20,7 +20,7 @@ classdef Joint < hgsetget
         % Origin relative to parent link:
         origin = [0 0];
         % Pivot relative to joint.
-        pivot_point = [0, 0];
+        pivotPoint = [0, 0];
         % Position relative to joint
         position = [0 0];
         % Angle relative to joint
@@ -29,15 +29,13 @@ classdef Joint < hgsetget
         % These are created by the World() class during runtime, and should
         % not be altered.
         %
-        % TODO: Alter variable names to be more consistent with the rest of
-        % the Joint class.
 
         % Stores data for parent and child links.
-        parentdata        
-        childdata
+        parentData        
+        childData
         
-        % Stores name of parent joint for positioning purposes.
-        parentjoint;
+        % Stores runtime object of parent joint for positioning purposes.
+        parentJoint;
         
         % World in which it is populated.
         world
@@ -103,9 +101,6 @@ classdef Joint < hgsetget
             end
         end
         
-        
-        % TODO: Define MoveX, MoveTo(x,y) for joints.
-
     end
     
 end

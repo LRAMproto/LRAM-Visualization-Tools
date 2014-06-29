@@ -22,11 +22,11 @@ classdef World < hgsetget
         % tracks all link objects in runtime.
         links
         
-        % auto_update set to 1 to automatically update the world whenever a
+        % autoUpdate set to 1 to automatically update the world whenever a
         % a joint is moved. If set to zero, you must call UpdateVisual
         % manually. This might be helpful if you wanted to change a ton of
         % variables before rendering.
-        auto_update = 1;
+        autoUpdate = 1;
     end
     
     methods
@@ -56,7 +56,7 @@ classdef World < hgsetget
                     % If the joint's child is this joint's parent
                     if strcmp(obj.joints(j).child,obj.joints(i).parent)
                         % Set the parent joint data appropriately.
-                        obj.joints(i).parentjoint = obj.joints(j);
+                        obj.joints(i).parentJoint = obj.joints(j);
                     end
                 end                
             end
@@ -71,11 +71,11 @@ classdef World < hgsetget
                 for j = 1:length(obj.links)
                     if strcmp(obj.links(j).name, obj.joints(i).parent)
                         parent_found = 1;
-                        obj.joints(i).parentdata = obj.links(j);
+                        obj.joints(i).parentData = obj.links(j);
                     end
                     if strcmp(obj.links(j).name, obj.joints(i).child)
                         child_found = 1;
-                        obj.joints(i).childdata = obj.links(j);
+                        obj.joints(i).childData = obj.links(j);
                     end
                     if parent_found == 1 && child_found == 1
                         break;
@@ -100,59 +100,59 @@ classdef World < hgsetget
             % FIXME: Rename variables to be consistent with the Link and
             % Joint class once these classes are altered appropriately.
             for i = 1:length(obj.joints)
-                child = obj.joints(i).childdata;
-                tracking_points = child.tracking_points;
+                child = obj.joints(i).childData;
+                trackingPoints = child.trackingPoints;
 
                 xdata = child.vertices.xdata;
                 ydata = child.vertices.ydata;
-                child.previous_vertices = child.current_vertices;                
+                child.previousVertices = child.currentVertices;                
 
-                [xdata,ydata] = matrix_rotate(xdata,ydata,child.origin_angle,child.origin_angle_pivot_point);
-                if ~isempty(tracking_points)
-                    for tp = 1:length(tracking_points)
-                        [tracking_points(tp).world_position(1),tracking_points(tp).world_position(2)] = ...
-                            matrix_rotate(tracking_points(tp).local_position(1),tracking_points(tp).local_position(2),...
-                            child.origin_angle,child.origin_angle_pivot_point);
-                        tracking_points(tp).world_position(1) = tracking_points(tp).local_position(1)+child.origin(1);
-                        tracking_points(tp).world_position(2) = tracking_points(tp).local_position(2)+child.origin(2);
+                [xdata,ydata] = matrix_rotate(xdata,ydata,child.originAngle,child.originAnglePivotPoint);
+                if ~isempty(trackingPoints)
+                    for pointNo = 1:length(trackingPoints)
+                        [trackingPoints(pointNo).worldPosition(1),trackingPoints(pointNo).worldPosition(2)] = ...
+                            matrix_rotate(trackingPoints(pointNo).localPosition(1),trackingPoints(pointNo).localPosition(2),...
+                            child.originAngle,child.originAnglePivotPoint);
+                        trackingPoints(pointNo).worldPosition(1) = trackingPoints(pointNo).localPosition(1)+child.origin(1);
+                        trackingPoints(pointNo).worldPosition(2) = trackingPoints(pointNo).localPosition(2)+child.origin(2);
                     end
                 end
                         
                 xdata = xdata + child.origin(1);
                 ydata = ydata + child.origin(2);
                 
-                cj = obj.joints(i);
+                curJoint = obj.joints(i);
 
-                while ~isempty(cj)
+                while ~isempty(curJoint)
                     % FIXME: Verify that this transformation is accurate.
-                    [xdata,ydata] = matrix_rotate(xdata,ydata,cj.angle,cj.pivot_point);
-                     xdata = xdata + cj.origin(1);
-                     ydata = ydata + cj.origin(2);
-                     xdata = xdata + cj.position(1);
-                     ydata = ydata + cj.position(2);
+                    [xdata,ydata] = matrix_rotate(xdata,ydata,curJoint.angle,curJoint.pivotPoint);
+                     xdata = xdata + curJoint.origin(1);
+                     ydata = ydata + curJoint.origin(2);
+                     xdata = xdata + curJoint.position(1);
+                     ydata = ydata + curJoint.position(2);
 
                     
-                if ~isempty(tracking_points)
-                for tp = 1:length(tracking_points)
+                if ~isempty(trackingPoints)
+                for pointNo = 1:length(trackingPoints)
                     [...
-                        tracking_points(tp).world_position(1),...
-                        tracking_points(tp).world_position(2)...
+                        trackingPoints(pointNo).worldPosition(1),...
+                        trackingPoints(pointNo).worldPosition(2)...
                         ] = ...
-                        matrix_rotate((tracking_points(tp).world_position(1)),(tracking_points(tp).world_position(2)),...
-                        cj.angle,cj.pivot_point);
-                        tracking_points(tp).world_position(1) = tracking_points(tp).world_position(1)+cj.origin(1);
-                        tracking_points(tp).world_position(2) = tracking_points(tp).world_position(2)+cj.origin(2);
-                        tracking_points(tp).world_position(1) = tracking_points(tp).world_position(1)+cj.position(1);
-                        tracking_points(tp).world_position(2) = tracking_points(tp).world_position(2)+cj.position(2);                        
+                        matrix_rotate((trackingPoints(pointNo).worldPosition(1)),(trackingPoints(pointNo).worldPosition(2)),...
+                        curJoint.angle,curJoint.pivotPoint);
+                        trackingPoints(pointNo).worldPosition(1) = trackingPoints(pointNo).worldPosition(1)+curJoint.origin(1);
+                        trackingPoints(pointNo).worldPosition(2) = trackingPoints(pointNo).worldPosition(2)+curJoint.origin(2);
+                        trackingPoints(pointNo).worldPosition(1) = trackingPoints(pointNo).worldPosition(1)+curJoint.position(1);
+                        trackingPoints(pointNo).worldPosition(2) = trackingPoints(pointNo).worldPosition(2)+curJoint.position(2);                        
                 end             
                 end
-                    cj = cj.parentjoint;
+                    curJoint = curJoint.parentJoint;
                 
                 end
-                child.current_vertices = struct('xdata',xdata,'ydata',ydata);
+                child.currentVertices = struct('xdata',xdata,'ydata',ydata);
 
                 
-                if ~isequal(child.previous_vertices,child.current_vertices);
+                if ~isequal(child.previousVertices,child.currentVertices);
                     disp('updating');
                     set(child.visual,'XData',xdata,'YData',ydata);
                 end
@@ -181,19 +181,19 @@ classdef World < hgsetget
                        
             for i = 1:length(obj.links)
                 obj.links(i).GeneratePoints;
-                obj.links(i).previous_vertices = struct('xdata',obj.links(i).vertices.xdata,'ydata',obj.links(i).vertices.ydata);
-                obj.links(i).current_vertices = struct('xdata',obj.links(i).vertices.xdata,'ydata',obj.links(i).vertices.ydata);
+                obj.links(i).previousVertices = struct('xdata',obj.links(i).vertices.xdata,'ydata',obj.links(i).vertices.ydata);
+                obj.links(i).currentVertices = struct('xdata',obj.links(i).vertices.xdata,'ydata',obj.links(i).vertices.ydata);
                 patchdata = patch(...
                     'Parent',obj.ax,...
                     'XData',obj.links(i).vertices.xdata+obj.links(i).origin(1),...
                     'YData',obj.links(i).vertices.ydata+obj.links(i).origin(2),...
                     'Visible',obj.links(i).visible,...
-                    'ButtonDownFcn',obj.links(i).buttondown_fcn,...
-                    'FaceColor',obj.links(i).fillcolor,...
-                    'FaceAlpha',obj.links(i).face_alpha,...
-                    'EdgeAlpha',obj.links(i).edge_alpha,...
+                    'ButtonDownFcn',obj.links(i).buttonDownFcn,...
+                    'FaceColor',obj.links(i).fillColor,...
+                    'FaceAlpha',obj.links(i).faceAlpha,...
+                    'EdgeAlpha',obj.links(i).edgeAlpha,...
                     'UserData',obj.links(i),...
-                    'LineWidth',obj.links(i).line_width);
+                    'LineWidth',obj.links(i).lineWidth);
                 set(obj.links(i),'visual',patchdata);
             end        
             obj.UpdateVisual();                            

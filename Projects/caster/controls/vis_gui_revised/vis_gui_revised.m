@@ -1,7 +1,7 @@
-function gui = vis_gui_revised(program_handles)
+function gui = vis_gui_revised(programHandles)
 % A visual display to connect to the visualizer core.
 % TODO: Refactor to take advantage of plugin objects.
-    core = program_handles.core;
+    core = programHandles.core;
 
     if (isequal(size(get(0,'monitorpositions')),[2,4]))
         dims = [-1800 -270 1800 1200];
@@ -48,7 +48,7 @@ function gui_init(gui,core)
     guidata(gui, handles);
     
     function ViscoreUpdate(core, eventdata)
-        results = findobj(core.gui_plugin_handles,'Name','vis_gui_revised');
+        results = findobj(core.guiPluginHandles,'Name','vis_gui_revised');
         fig = results(1);
         handles = guidata(fig);
         handles.world.UpdateVisual();

@@ -55,20 +55,20 @@ function vis_control_OpeningFcn(hObject, eventdata, handles, varargin)
 % Choose default command line output for vis_control
 handles.output = hObject;
 
-program_handles = varargin{1};
+programHandles = varargin{1};
 % TODO: Re-Organize Programs into a logical fashion instead of a big mess.
 
-handles.core = program_handles.core;
+handles.core = programHandles.core;
 handles.target_plate = findobj(handles.core.settings.links,'name','Target Plate');
 handles.plugin = findobj(handles.core.plugins,'name','Control Panel');
 handles.target_plate_joint = findobj(handles.core.settings.joints,'name','Target Plate to Pivot Joint');
 handles.robot_arm_joint = findobj(handles.core.settings.joints,'name','Arm Joint');
-handles.robot_arm = handles.robot_arm_joint.childdata;
-handles.arm_pivot_tracking_point = findobj(handles.robot_arm.tracking_points,'name','Arm Pivot Point');
+handles.robot_arm = handles.robot_arm_joint.childData;
+handles.arm_pivot_tracking_point = findobj(handles.robot_arm.trackingPoints,'name','Arm Pivot Point');
 handles.robot_plate_to_frame_joint = findobj(handles.core.settings.joints,'name','Robot Mounting Plate to Frame Joint');
 handles.ball_position_joint = findobj(handles.core.settings.joints,'name','Ball Position Joint');
 handles.target_pivot = findobj(handles.core.settings.links,'name','Target Plate Pivot');
-handles.target = findobj(handles.target_pivot.tracking_points,'name','Target Pivot Point');
+handles.target = findobj(handles.target_pivot.trackingPoints,'name','Target Pivot Point');
 
 set(handles.plugin,'update_fcn',@ViscoreUpdate);
 set(handles.plugin,'shutdown_fcn',@ViscoreShutdown);    
@@ -325,7 +325,7 @@ function ViscoreUpdate(core, eventdata)
         pos = get(handles.robot_arm_joint,'angle');
         pos = pos - pi;
         plate_height = get(handles.robot_plate_to_frame_joint,'position');
-        pivot_point = get(handles.arm_pivot_tracking_point,'world_position');
+        pivot_point = get(handles.arm_pivot_tracking_point,'worldPosition');
         handles.UpdateTrajectory(handles,vel,pos,pivot_point);
         
         guidata(fig,handles);
@@ -355,7 +355,7 @@ Xo = pivot_point(1);
 %Xo  = .33;
 %target = [2.49 1.36];           % Location of target from lower left
 %target = [2.49 0];           % Location of target from lower left
-target = handles.target.world_position;
+target = handles.target.worldPosition;
 [positions,velocities] = trajectory(t,Vo,Ro,Xo,Yo,target);
 %[positions,velocities] = old_trajectory(t,Vo,Ro,Xo,Yo);
 set(handles.trajectory,'XData',positions(1,:),'YData',positions(2,:));

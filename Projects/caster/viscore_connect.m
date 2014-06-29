@@ -10,7 +10,7 @@ function handles = viscore_connect(guifcn,core)
 % Tries to find the viscore GUI
 
     % Appends plugins 
-    core.gui_plugin_handles(length(core.gui_plugin_handles)+1) = guifcn; 
+    core.guiPluginHandles(length(core.guiPluginHandles)+1) = guifcn; 
     
     handles = guidata(guifcn);
     fprintf('Connecting gui function [%s] to viscore\n',get(guifcn,'Name'));

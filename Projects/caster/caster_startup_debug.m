@@ -7,8 +7,8 @@ function ph = viscore_startup
     ph.core = VisualizerCore();
     
     set(ph.core,...
-        'settingsfile','caster_default_settings',...
-        'debug_mode',0);
+        'settingsFile','caster_default_settings',...
+        'debugMode',0);
     
     % Loads stored settings into the core settings object.
     ph.core.LoadSettings();    

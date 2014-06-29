@@ -4,9 +4,9 @@ classdef TrackingPoint < hgsetget
     
     properties
         name
-        parent_link
-        local_position = [0 0];
-        world_position = [0 0];        
+        parentLink
+        localPosition = [0 0];
+        worldPosition = [0 0];        
     end
     
     methods

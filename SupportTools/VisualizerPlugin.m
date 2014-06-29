@@ -7,7 +7,7 @@ classdef VisualizerPlugin < hgsetget
     
     properties
         % Tracks handles of entire program.
-        program_handles
+        programHandles
         
         % Uniquely identifying name of program.
         name
@@ -16,14 +16,14 @@ classdef VisualizerPlugin < hgsetget
         core
         
         % figure handle used for creating visual elements
-        gui_handle
-        gui_fcn
+        guiHandle
+        guiFcn
         
         % Core Listener
-        update_listener;
-        shutdown_listener;              
+        updateListener;
+        shutdownListener;              
 
-        debug_mode = 0;
+        debugMode = 0;
         
         % Runtime defined functions for updating and shutting down
         update_fcn;
@@ -40,30 +40,30 @@ classdef VisualizerPlugin < hgsetget
             obj.core = core;
             
             obj.name = name;
-            obj.update_listener = addlistener(obj.core,'UpdateEvent',@obj.ViscoreUpdate);
-            obj.shutdown_listener = addlistener(obj.core,'ShutdownEvent',@obj.ViscoreShutdown);
+            obj.updateListener = addlistener(obj.core,'UpdateEvent',@obj.ViscoreUpdate);
+            obj.shutdownListener = addlistener(obj.core,'ShutdownEvent',@obj.ViscoreShutdown);
         end      
         
         function AddToPlugins(obj)
-            if(obj.debug_mode)
+            if(obj.debugMode)
                 fprintf('* Adding plugin [%s] to core plugins.\n',obj.name);
             end
             
             obj.core.plugins = [obj.core.plugins,obj];
-            %obj.program_handles.core.plugins(length(obj.program_handles.core.plugins)+1) = handle(obj);
+            %obj.programHandles.core.plugins(length(obj.programHandles.core.plugins)+1) = handle(obj);
             
         end
         
         function LoadGui(obj)
             % Loads the GUI pointed to by the plugin.
-            obj.gui_fcn(obj.core.program_handles);
+            obj.guiFcn(obj.core.programHandles);
         end
         
         
         %% Visualizer Event Functions
         
         function obj = ViscoreUpdate(obj,core,eventdata)
-            if (obj.debug_mode)
+            if (obj.debugMode)
                fprintf('* [%s] hears update from core.\n',obj.name);
             end
 
@@ -75,7 +75,7 @@ classdef VisualizerPlugin < hgsetget
         end
         
         function obj = ViscoreShutdown(obj,core,eventdata)
-            if (obj.debug_mode)
+            if (obj.debugMode)
                fprintf('* [%s] hears shudown from core.\n',obj.name);
             end
             

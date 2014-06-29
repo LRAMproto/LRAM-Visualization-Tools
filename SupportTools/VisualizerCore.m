@@ -9,10 +9,10 @@ classdef VisualizerCore < hgsetget
         % use, but the visualizer core so far supports only one robot.
         
         % Tracks relevant runtime data.
-        program_handles
+        programHandles
         
         % Keeps track of the file from which settings are loaded.
-        settingsfile = []
+        settingsFile = []
 
         % Keeps track of the settings during runtime for the program.
         settings
@@ -21,22 +21,22 @@ classdef VisualizerCore < hgsetget
         plugins = [];
         
         % Identifies the handles of all open programs.
-        gui_plugin_handles = [];
+        guiPluginHandles = [];
         
         
         % Specifies whether the program will display debugging messages.
-        debug_mode = 0;
+        debugMode = 0;
     end
 
     methods
         function obj = VisualizerCore()
             % Constructor method.
-            obj.program_handles.core = obj;
+            obj.programHandles.core = obj;
         end
         
         function Shutdown(obj)
             %Shuts down the Visualizer Core
-            if (obj.debug_mode)
+            if (obj.debugMode)
                 disp('## Core Shutting Down ##');
             end
             notify(obj,'ShutdownEvent');
@@ -45,29 +45,29 @@ classdef VisualizerCore < hgsetget
         
         function LoadSettings(obj)
             % Loads settings to the Visualizer Core.
-            if (obj.debug_mode)
+            if (obj.debugMode)
                 disp('## Core loading stored settings ##');
             end
             
-            if isempty(obj.settingsfile)
+            if isempty(obj.settingsFile)
                 error('No settings to load.');
             end
-            obj.LoadSettingsFrom(obj.settingsfile)
+            obj.LoadSettingsFrom(obj.settingsFile)
             notify(obj,'UpdateEvent');
         end
         
         function LoadSettingsFrom(obj,filename)
             % Loads a set of settings into the core from a file.
-            if (obj.debug_mode)
+            if (obj.debugMode)
                 fprintf('## Core loading settings from [%s]\n',filename);
             end
-            obj.settingsfile =  filename;
-            obj.settings = load(obj.settingsfile);
+            obj.settingsFile =  filename;
+            obj.settings = load(obj.settingsFile);
         end
         
         function SaveSettingsTo(obj, filename)
             % Saves a set of settings to a specified file path            
-            if (obj.debug_mode)
+            if (obj.debugMode)
                 fprintf('## Core saving settings to [%s]\n',filename);
             end            
             settings = obj.settings;

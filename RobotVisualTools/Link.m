@@ -28,12 +28,12 @@ classdef Link < hgsetget
         % relative position of the square.
         origin = [0,0];
         % Angle at which the joint is drawn by default.
-        origin_angle = 0;
+        originAngle = 0;
         % Specifies where the object is rotated.
-        origin_angle_pivot_point = [0 0];
+        originAnglePivotPoint = [0 0];
         % FIXME: Deprecate the 'current position' of the link, as this
         % isn't used.
-        current_position = [0 0];
+        currentPosition = [0 0];
         % specifies the curvature of drawn objects.
         cap_pct = 0;
         
@@ -44,15 +44,15 @@ classdef Link < hgsetget
         % Sets the fill color of the patch that is used. It defaults to
         % black, but can be set to anything.
 
-        fillcolor = [0 0 0];
+        fillColor = [0 0 0];
 
         visible = 'on';
         
-        face_alpha = 1;
-        edge_alpha = 1;
+        faceAlpha = 1;
+        edgeAlpha = 1;
         
         % Sets the line width of all points. Must be greater than zero.
-        line_width = 0.5;
+        lineWidth = 0.5;
         
         %% Runtime Defined Variables
         % Tracks where the runtime object
@@ -62,19 +62,19 @@ classdef Link < hgsetget
         vertices = struct('xdata',[],'ydata',[]);
         
         % TODO: Define optimization steps in the World class that take
-        % advantage of current_vertices and previous_vertices
+        % advantage of currentVertices and previousVertices
         
-        current_vertices = struct('xdata',[],'ydata',[]);
-        previous_vertices = struct('xdata',[],'ydata',[]);
+        currentVertices = struct('xdata',[],'ydata',[]);
+        previousVertices = struct('xdata',[],'ydata',[]);
         
         %Define behavior when one of the links is clicked.
 
-        buttondown_fcn = [];
+        buttonDownFcn = [];
         
         % World that the link belongs to.
         world
         
-        tracking_points = {};
+        trackingPoints = {};
 
     end
     
@@ -144,19 +144,19 @@ classdef Link < hgsetget
             % Deprecated. This should be moved to the Joint class so that a
             % joint defines where a link goes instead of a link.
             
-            obj.current_position = destination;
+            obj.currentPosition = destination;
             set(obj.visual,...
-                'XData',obj.vertices.xdata+obj.current_position(1),...
-                'YData',obj.vertices.ydata+obj.current_position(2));            
+                'XData',obj.vertices.xdata+obj.currentPosition(1),...
+                'YData',obj.vertices.ydata+obj.currentPosition(2));            
         end
         
         function AddTrackingPoint(obj,name,position)
             newpoint = TrackingPoint();
             set(newpoint,...
                 'name',name,...
-                'parent_link',obj,...
-                'local_position',position);
-            obj.tracking_points = [obj.tracking_points,newpoint];
+                'parentLink',obj,...
+                'localPosition',position);
+            obj.trackingPoints = [obj.trackingPoints,newpoint];
         end
         
     end
