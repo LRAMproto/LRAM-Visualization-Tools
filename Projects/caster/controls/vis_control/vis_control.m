@@ -1,15 +1,15 @@
 function varargout = vis_control(varargin)
-% VIS_CONTROL MATLAB code for vis_control.fig
-%      VIS_CONTROL, by itself, creates a new VIS_CONTROL or raises the existing
+% VIS_CONTROL_FIGURE MATLAB code for vis_control_figure.fig
+%      VIS_CONTROL_FIGURE, by itself, creates a new VIS_CONTROL_FIGURE or raises the existing
 %      singleton*.
 %
-%      H = VIS_CONTROL returns the handle to a new VIS_CONTROL or the handle to
+%      H = VIS_CONTROL_FIGURE returns the handle to a new VIS_CONTROL_FIGURE or the handle to
 %      the existing singleton*.
 %
-%      VIS_CONTROL('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in VIS_CONTROL.M with the given input arguments.
+%      VIS_CONTROL_FIGURE('CALLBACK',hObject,eventData,handles,...) calls the local
+%      function named CALLBACK in VIS_CONTROL_FIGURE.M with the given input arguments.
 %
-%      VIS_CONTROL('Property','Value',...) creates a new VIS_CONTROL or raises the
+%      VIS_CONTROL_FIGURE('Property','Value',...) creates a new VIS_CONTROL_FIGURE or raises the
 %      existing singleton*.  Starting from the left, property value pairs are
 %      applied to the GUI before vis_control_OpeningFcn gets called.  An
 %      unrecognized property name or invalid value makes property application
@@ -20,18 +20,18 @@ function varargout = vis_control(varargin)
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
-% Edit the above text to modify the response to help vis_control
+% Edit the above text to modify the response to help vis_control_figure
 
-% Last Modified by GUIDE v2.5 27-Jun-2014 15:52:20
+% Last Modified by GUIDE v2.5 29-Jun-2014 19:14:32
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
-                   'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @vis_control_OpeningFcn, ...
-                   'gui_OutputFcn',  @vis_control_OutputFcn, ...
-                   'gui_LayoutFcn',  [] , ...
-                   'gui_Callback',   []);
+    'gui_Singleton',  gui_Singleton, ...
+    'gui_OpeningFcn', @vis_control_OpeningFcn, ...
+    'gui_OutputFcn',  @vis_control_OutputFcn, ...
+    'gui_LayoutFcn',  [] , ...
+    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
     gui_State.gui_Callback = str2func(varargin{1});
 end
@@ -44,49 +44,78 @@ end
 % End initialization code - DO NOT EDIT
 
 
-% --- Executes just before vis_control is made visible.
+% --- Executes just before vis_control_figure is made visible.
 function vis_control_OpeningFcn(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-% varargin   command line arguments to vis_control (see VARARGIN)
+% varargin   command line arguments to vis_control_figure (see VARARGIN)
 
-% Choose default command line output for vis_control
+% Choose default command line output for vis_control_figure
 handles.output = hObject;
 
-programHandles = varargin{1};
+handles.plugin = varargin{1};
 % TODO: Re-Organize Programs into a logical fashion instead of a big mess.
 
-handles.core = programHandles.core;
-handles.target_plate = findobj(handles.core.settings.links,'name','Target Plate');
-handles.plugin = findobj(handles.core.plugins,'name','Control Panel');
-handles.target_plate_joint = findobj(handles.core.settings.joints,'name','Target Plate to Pivot Joint');
-handles.robot_arm_joint = findobj(handles.core.settings.joints,'name','Arm Joint');
-handles.robot_arm = handles.robot_arm_joint.childData;
-handles.arm_pivot_tracking_point = findobj(handles.robot_arm.trackingPoints,'name','Arm Pivot Point');
-handles.robot_plate_to_frame_joint = findobj(handles.core.settings.joints,'name','Robot Mounting Plate to Frame Joint');
-handles.ball_position_joint = findobj(handles.core.settings.joints,'name','Ball Position Joint');
-handles.target_pivot = findobj(handles.core.settings.links,'name','Target Plate Pivot');
-handles.target = findobj(handles.target_pivot.trackingPoints,'name','Target Pivot Point');
+handles.plugin.ConnectGui(gcf);
 
-set(handles.plugin,'update_fcn',@ViscoreUpdate);
-set(handles.plugin,'shutdown_fcn',@ViscoreShutdown);    
-set(handles.connection_status_display,'string','CONNECTED');
+% Robot Mounting Plate.
+handles.robotMountingPlateToFrameJoint = findobj(handles.plugin.core.settings.CastingRobot.joints,'name','Robot Mounting Plate to Frame Joint');
+% Robot Arm
+handles.armJoint = findobj(handles.plugin.core.settings.CastingRobot.joints,'name','Arm Joint');
+% TODO: Redefine using findobj
+handles.robot_arm = handles.armJoint.childData;
+handles.armPivotPoint = findobj(handles.robot_arm.trackingPoints,'name','Arm Pivot Point');
 
-handles.world = handles.core.settings.links(1).world;
-handles.display_axis = handles.world.ax;
-set(handles.display_axis,'XLimMode','manual','YLimMode','manual');
-handles.trajectory = plot(handles.display_axis,[0 1 2 3],[0 0 0 0],'O-');
+% Target Mounting Plate
+handles.targetMountingPlateToFrameJoint = findobj(handles.plugin.core.settings.CastingRobot.joints,'name','Target Mounting Plate to Frame Joint');
+
+% Target
+
+handles.targetPlateToPivotJoint = findobj(handles.plugin.core.settings.CastingRobot.joints,'name','Target Plate to Pivot Joint');
+handles.targetPlate = findobj(handles.plugin.core.settings.CastingRobot.links,'name','Target Plate');
+handles.targetPlatePivot = findobj(handles.plugin.core.settings.CastingRobot.links,'name','Target Plate Pivot');
+handles.targetPivotPoint = findobj(handles.targetPlatePivot.trackingPoints,'name','Target Pivot Point');
+handles.targetPlatePivotToTargetMountingPlateJoint = findobj(handles.plugin.core.settings.CastingRobot.joints,'name','Target Plate Pivot to Target Mounting Plate Joint');
+handles.boxToMountingPlateJoint = findobj(handles.plugin.core.settings.CastingRobot.joints,'name','Box to Mounting Plate Joint');
+
+% Position of ball with respect to world.
+
+handles.spot = findobj(handles.plugin.core.settings.CastingRobot.links,'name','Ball');
+
+handles.ballPositionJoint = findobj(handles.plugin.core.settings.CastingRobot.joints,'name','Ball Position Joint');
+
+set(handles.plugin,'updateFcn',@ViscoreUpdate);
+set(handles.plugin,'postUpdateFcn',@ViscorePostUpdate);
+set(handles.plugin,'shutdownFcn',@ViscoreShutdown);
+
+handles.world = handles.plugin.core.settings.CastingRobot.links(1).world;
+handles.display_axis = handles.world.displayAxis;
+
+handles.display_axis_parent = get(handles.display_axis,'parent');
+
+
+handles.trajectory = line('parent',handles.display_axis,'xdata',[0 2 4 6],'ydata',[0 0 0 0],'color','blue','linewidth',3);
+
 handles.UpdateTrajectory = @UpdateTrajectory;
+
+set(handles.spot_color_select,'UserData',[...
+    handles.plugin.core.settings.misc.colors.HattonRed;...
+    handles.plugin.core.settings.misc.colors.OsuOrange]);
+
+set(handles.spot_color_select,'Value',...
+    handles.plugin.core.settings.misc.colors.SpotColorDefault);
+
 % Update handles structure
 guidata(hObject, handles);
+notify(handles.plugin.core,'UpdateEvent');
 
-% UIWAIT makes vis_control wait for user response (see UIRESUME)
-% uiwait(handles.vis_control);
+% UIWAIT makes vis_control_figure wait for user response (see UIRESUME)
+% uiwait(handles.vis_control_figure);
 
 % --- Outputs from this function are returned to the command line.
-function varargout = vis_control_OutputFcn(hObject, eventdata, handles) 
+function varargout = vis_control_OutputFcn(hObject, eventdata, handles)
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -96,13 +125,13 @@ function varargout = vis_control_OutputFcn(hObject, eventdata, handles)
 varargout{1} = handles.output;
 
 
-% --- Executes on button press in target_plate_visibility.
+% --- Executes on button press in targetPlate_visibility.
 function target_plate_visibility_Callback(hObject, eventdata, handles)
-% hObject    handle to target_plate_visibility (see GCBO)
+% hObject    handle to targetPlate_visibility (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of target_plate_visibility
+% Hint: get(hObject,'Value') returns toggle state of targetPlate_visibility
 if get(hObject,'Value') == 0
     set(handles.target_plate_angle_edit,'enable','off');
 end
@@ -110,7 +139,7 @@ if get(hObject,'Value') == 1
     set(handles.target_plate_angle_edit,'enable','on');
 end
 
-handles.target_plate.ToggleVisibility();
+handles.targetPlate.ToggleVisibility();
 
 
 function robot_mounting_plate_height_edit_Callback(hObject, eventdata, handles)
@@ -121,9 +150,9 @@ function robot_mounting_plate_height_edit_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of robot_mounting_plate_height_edit as text
 %        str2double(get(hObject,'String')) returns contents of robot_mounting_plate_height_edit as a double
 newheight = str2double(get(hObject,'String'));
-handles.core.settings.misc.robot.PlatePosition = newheight;
-set(handles.robot_plate_to_frame_joint,'position',handles.core.settings.misc.robot.PlatePositionFcn(newheight));
-notify(handles.core,'UpdateEvent');
+handles.plugin.core.settings.misc.robot.PlatePosition = newheight;
+set(handles.robotMountingPlateToFrameJoint,'position',handles.plugin.core.settings.misc.robot.PlatePositionFcn(newheight));
+notify(handles.plugin.core,'UpdateEvent');
 
 % --- Executes during object creation, after setting all properties.
 function robot_mounting_plate_height_edit_CreateFcn(hObject, eventdata, handles)
@@ -146,6 +175,14 @@ function robot_peg_x_edit_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of robot_peg_x_edit as text
 %        str2double(get(hObject,'String')) returns contents of robot_peg_x_edit as a double
+newX = str2double(get(hObject,'String'));
+oldY = handles.plugin.core.settings.misc.robot.pegPosition(2);
+handles.plugin.core.settings.misc.robot.pegPosition = [newX, oldY];
+set(handles.boxToMountingPlateJoint,'position',...
+    handles.plugin.core.settings.misc.robot.PegPositionFcn(...
+    handles.plugin.core.settings.misc.robot.pegPosition));
+
+notify(handles.plugin.core,'UpdateEvent');
 
 
 % --- Executes during object creation, after setting all properties.
@@ -170,6 +207,15 @@ function robot_peg_y_edit_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of robot_peg_y_edit as text
 %        str2double(get(hObject,'String')) returns contents of robot_peg_y_edit as a double
 
+newY = str2double(get(hObject,'String'));
+oldX = handles.plugin.core.settings.misc.robot.pegPosition(1);
+handles.plugin.core.settings.misc.robot.pegPosition = [oldX, newY];
+set(handles.boxToMountingPlateJoint,'position',...
+    handles.plugin.core.settings.misc.robot.PegPositionFcn(...
+    handles.plugin.core.settings.misc.robot.pegPosition));
+
+notify(handles.plugin.core,'UpdateEvent');
+
 
 % --- Executes during object creation, after setting all properties.
 function robot_peg_y_edit_CreateFcn(hObject, eventdata, handles)
@@ -193,8 +239,8 @@ function target_plate_angle_edit_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of target_plate_angle_edit as text
 %        str2double(get(hObject,'String')) returns contents of target_plate_angle_edit as a double
 theta = str2double(get(hObject,'String'));
-handles.target_plate_joint.Rotate(theta);
-notify(handles.core,'UpdateEvent');
+handles.targetPlateToPivotJoint.Rotate(theta);
+notify(handles.plugin.core,'UpdateEvent');
 
 
 % --- Executes during object creation, after setting all properties.
@@ -219,6 +265,11 @@ function target_mounting_plate_height_edit_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of target_mounting_plate_height_edit as text
 %        str2double(get(hObject,'String')) returns contents of target_mounting_plate_height_edit as a double
 
+%TODO: Define this function
+newheight = str2double(get(hObject,'String'));
+handles.plugin.core.settings.misc.target.PlatePosition = newheight;
+set(handles.targetMountingPlateToFrameJoint,'position',handles.plugin.core.settings.misc.target.PlatePositionFcn(newheight));
+notify(handles.plugin.core,'UpdateEvent');
 
 % --- Executes during object creation, after setting all properties.
 function target_mounting_plate_height_edit_CreateFcn(hObject, eventdata, handles)
@@ -241,6 +292,14 @@ function target_peg_x_edit_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of target_peg_x_edit as text
 %        str2double(get(hObject,'String')) returns contents of target_peg_x_edit as a double
+newX = str2double(get(hObject,'String'));
+oldY = handles.plugin.core.settings.misc.target.pegPosition(2);
+handles.plugin.core.settings.misc.target.pegPosition = [newX, oldY];
+set(handles.targetPlatePivotToTargetMountingPlateJoint,'position',...
+    handles.plugin.core.settings.misc.target.PegPositionFcn(...
+    handles.plugin.core.settings.misc.target.pegPosition));
+
+notify(handles.plugin.core,'UpdateEvent');
 
 
 % --- Executes during object creation, after setting all properties.
@@ -265,6 +324,14 @@ function target_peg_y_edit_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of target_peg_y_edit as text
 %        str2double(get(hObject,'String')) returns contents of target_peg_y_edit as a double
 
+newY = str2double(get(hObject,'String'));
+oldX = handles.plugin.core.settings.misc.target.pegPosition(1);
+handles.plugin.core.settings.misc.target.pegPosition = [oldX, newY];
+set(handles.targetPlatePivotToTargetMountingPlateJoint,'position',...
+    handles.plugin.core.settings.misc.target.PegPositionFcn(...
+    handles.plugin.core.settings.misc.target.pegPosition));
+
+notify(handles.plugin.core,'UpdateEvent');
 
 % --- Executes during object creation, after setting all properties.
 function target_peg_y_edit_CreateFcn(hObject, eventdata, handles)
@@ -287,12 +354,17 @@ function spot_color_select_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns spot_color_select contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from spot_color_select
-contents = cellstr(get(hObject,'String'));
-disp(contents{get(hObject,'Value')});
 
 if (get(hObject,'value')==1)
 end
+choice = get(hObject,'Value');
+colors = get(hObject,'UserData');
+handles.plugin.core.settings.misc.colors.SpotColorDefault = choice;
+set(handles.spot,'fillColor',colors(choice,:));
 
+
+%TODO: Define this function
+notify(handles.plugin.core,'UpdateEvent');
 
 % --- Executes during object creation, after setting all properties.
 function spot_color_select_CreateFcn(hObject, eventdata, handles)
@@ -307,40 +379,57 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 function ViscoreUpdate(core, eventdata)
-        results = findall(0,'tag','vis_control');
-        fig = results(1);
-        handles = guidata(fig);
-        set(handles.robot_peg_x_edit,'String',handles.core.settings.misc.robot.PegPosition(1));
-        set(handles.robot_peg_y_edit,'String',handles.core.settings.misc.robot.PegPosition(2));
+results = findall(core.guiPluginHandles,'tag','vis_control_figure');
+if numel(results) == 0
+    error('ViscoreUpdate in vis_control cannot find vis_control.');
+end
+fig = results(1);
+handles = guidata(fig);
+set(handles.connection_status_display,'string','UPDATE PENDING');
 
-        set(handles.target_peg_x_edit,'String',handles.core.settings.misc.target.PegPosition(1));
-        set(handles.target_peg_y_edit,'String',handles.core.settings.misc.target.PegPosition(2));
 
-        set(handles.target_plate_angle_edit,'String',get(handles.target_plate_joint,'angle'));
-        set(handles.robot_arm_angle_edit,'String',get(handles.robot_arm_joint,'angle'));
-        set(handles.robot_mounting_plate_height_edit,'String',handles.core.settings.misc.robot.PlatePosition);
-        set(handles.target_mounting_plate_height_edit,'String',handles.core.settings.misc.target.PlatePosition);
-        
-        vel = str2double(get(handles.robot_arm_velocity_edit,'String'));
-        pos = get(handles.robot_arm_joint,'angle');
-        pos = pos - pi;
-        plate_height = get(handles.robot_plate_to_frame_joint,'position');
-        pivot_point = get(handles.arm_pivot_tracking_point,'worldPosition');
-        handles.UpdateTrajectory(handles,vel,pos,pivot_point);
-        
-        guidata(fig,handles);
+function ViscorePostUpdate(core, eventdata)
+results = findall(core.guiPluginHandles,'tag','vis_control_figure');
+if numel(results) == 0
+    error('ViscorePostUpdate in vis_control cannot find vis_control.');
+end
+fig = results(1);
+handles = guidata(fig);
+set(handles.connection_status_display,'string','UPDATING GUI');
+set(handles.spot_color_select,'Value',...
+    handles.plugin.core.settings.misc.colors.SpotColorDefault);
 
-    
+set(handles.robot_peg_x_edit,'String',handles.plugin.core.settings.misc.robot.pegPosition(1));
+set(handles.robot_peg_y_edit,'String',handles.plugin.core.settings.misc.robot.pegPosition(2));
+
+set(handles.target_peg_x_edit,'String',handles.plugin.core.settings.misc.target.pegPosition(1));
+set(handles.target_peg_y_edit,'String',handles.plugin.core.settings.misc.target.pegPosition(2));
+
+set(handles.target_plate_angle_edit,'String',get(handles.targetPlateToPivotJoint,'angle'));
+set(handles.robot_arm_angle_edit,'String',get(handles.armJoint,'angle'));
+set(handles.robot_mounting_plate_height_edit,'String',handles.plugin.core.settings.misc.robot.PlatePosition);
+set(handles.target_mounting_plate_height_edit,'String',handles.plugin.core.settings.misc.target.PlatePosition);
+set(handles.robot_arm_velocity_edit,'String',num2str(handles.plugin.core.settings.misc.robot.arm.velocity));
+vel = handles.plugin.core.settings.misc.robot.arm.velocity;
+pos = get(handles.armJoint,'angle');
+pos = pos - pi;
+plate_height = get(handles.robotMountingPlateToFrameJoint,'position');
+pivot_point = get(handles.armPivotPoint,'worldPosition');
+handles.UpdateTrajectory(handles,vel,pos,pivot_point);
+set(handles.connection_status_display,'string','UPDATED');
+guidata(fig,handles);
+
+
 function ViscoreShutdown(core, eventdata)
 
-function UpdateTrajectory(handles,Vo,Ro,pivot_point)
+function UpdateTrajectory(handles,Vi,Ri,pivot_point)
+
+
 % Plot data
 t = linspace(0,0.5,10);
-%theta = pi/3;                   % Release angle
 
-theta = Ro;
-omega = [0 0 Vo];
-%omega = [0 0 2*pi];
+theta = Ri;
+omega = [0 0 Vi];
 
 L   = get(handles.robot_arm,'width')/2; % length of arm
 
@@ -349,18 +438,14 @@ Ry  = -L*cos(theta);
 Ro  = [Rx Ry 0];
 Vo  = cross(omega,Ro);
 
-Yo = pivot_point(2);
+Yo = pivot_point(2); % This is the position of the rotating axis
 Xo = pivot_point(1);
-%Yo  = 2;                 % This is the position of the rotating axis
-%Xo  = .33;
-%target = [2.49 1.36];           % Location of target from lower left
-%target = [2.49 0];           % Location of target from lower left
-target = handles.target.worldPosition;
-[positions,velocities] = trajectory(t,Vo,Ro,Xo,Yo,target);
-%[positions,velocities] = old_trajectory(t,Vo,Ro,Xo,Yo);
+target = handles.targetPivotPoint.worldPosition; % Location of target from lower left
+%[positions,velocities] = trajectory(t,Vo,Ro,Xo,Yo,target);
+[positions,velocities] = old_trajectory(t,Vo,Ro,Xo,Yo);
 set(handles.trajectory,'XData',positions(1,:),'YData',positions(2,:));
 set(handles.display_axis,'XLim',[-0.5 3.31],'YLim',[0 2.54]);
-handles.ball_position_joint.MoveXY(positions(1,length(positions)),positions(2,length(positions)));
+handles.ballPositionJoint.MoveXY(positions(1,length(positions)),positions(2,length(positions)));
 
 function robot_arm_angle_edit_Callback(hObject, eventdata, handles)
 % hObject    handle to robot_arm_angle_edit (see GCBO)
@@ -371,8 +456,8 @@ function robot_arm_angle_edit_Callback(hObject, eventdata, handles)
 %        str2double(get(hObject,'String')) returns contents of robot_arm_angle_edit as a double
 
 theta = str2double(get(hObject,'String'));
-handles.robot_arm_joint.Rotate(theta);
-notify(handles.core,'UpdateEvent');
+handles.armJoint.Rotate(theta);
+notify(handles.plugin.core,'UpdateEvent');
 
 % --- Executes during object creation, after setting all properties.
 function robot_arm_angle_edit_CreateFcn(hObject, eventdata, handles)
@@ -395,7 +480,8 @@ function robot_arm_velocity_edit_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of robot_arm_velocity_edit as text
 %        str2double(get(hObject,'String')) returns contents of robot_arm_velocity_edit as a double
-notify(handles.core,'UpdateEvent');
+handles.plugin.core.settings.misc.robot.arm.velocity = str2double(get(handles.robot_arm_velocity_edit,'String'));
+notify(handles.plugin.core,'UpdateEvent');
 
 % --- Executes during object creation, after setting all properties.
 function robot_arm_velocity_edit_CreateFcn(hObject, eventdata, handles)

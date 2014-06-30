@@ -5,6 +5,8 @@ classdef Joint < hgsetget
     properties
         % Unique name for a link for searching purposes.
         name = 'Undefined'
+        
+        tag = 'Undefined'
         % Link type.
         % * Fixed: No rotation
         % * Revolute: Rotates about X and Y
@@ -29,13 +31,16 @@ classdef Joint < hgsetget
         % These are created by the World() class during runtime, and should
         % not be altered.
         %
-
+        
         % Stores data for parent and child links.
-        parentData        
+        parentData
         childData
         
         % Stores runtime object of parent joint for positioning purposes.
         parentJoint;
+        
+        % Robot object.
+        robot
         
         % World in which it is populated.
         world
@@ -59,10 +64,10 @@ classdef Joint < hgsetget
             
             if ~isfloat(theta) && ~isequal(size(theta),[1 1]);
                 error('angle invalid');
-            end                        
+            end
             % TODO: Add checking of joint limits?
             
-            if ~isempty(obj.world) && obj.world.auto_update == 1
+            if ~isempty(obj.world) && obj.world.autoUpdate == 1
                 obj.world.UpdateVisual();
             end
             
@@ -71,11 +76,11 @@ classdef Joint < hgsetget
         function MoveY(obj,y)
             if ~isfloat(y) && ~isequal(size(y),[1 1]);
                 error('y invalid');
-            end            
+            end
             % Moves a variable in the x position.
-            % TODO: Add checking of joint limits?            
+            % TODO: Add checking of joint limits?
             obj.position = [obj.position(1),y];
-            if ~isempty(obj.world) && obj.world.auto_update == 1
+            if ~isempty(obj.world) && obj.world.autoUpdate == 1
                 obj.world.UpdateVisual();
             end
         end
@@ -83,14 +88,14 @@ classdef Joint < hgsetget
         function MoveX(obj,x)
             if ~isfloat(x) && ~isequal(size(x),[1 1]);
                 error('x invalid');
-            end                        
+            end
             % Moves a variable in the x position.
-            % TODO: Add checking of joint limits?            
+            % TODO: Add checking of joint limits?
             obj.position = [x,obj.position(2)];
-            if ~isempty(obj.world) && obj.world.auto_update == 1
+            if ~isempty(obj.world) && obj.world.autoUpdate == 1
                 obj.world.UpdateVisual();
             end
-        end        
+        end
         
         function MoveXY(obj,x,y)
             if isfloat([x,y]) && isequal(size([x,y]),[1,2])

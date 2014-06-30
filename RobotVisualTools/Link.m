@@ -7,13 +7,15 @@ classdef Link < hgsetget
         
         %% Statically Defined Variables
         
-        % Uniquely identifying name.
+        % Human Readable Name
         name = 'Default';
+        % Uniquely identifying name.
+        tag = 'Undefined';
         % Type of link; usually Rectangle, Circle, or Custom
         type = 'Undefined';
         % Width of visual element of the link; not always used but
         % sometimes helpful;
-
+        
         %% Sets geometry of link objects
         width = 0;
         % Height of visual element of the link.
@@ -43,9 +45,9 @@ classdef Link < hgsetget
         
         % Sets the fill color of the patch that is used. It defaults to
         % black, but can be set to anything.
-
+        
         fillColor = [0 0 0];
-
+        
         visible = 'on';
         
         faceAlpha = 1;
@@ -57,7 +59,7 @@ classdef Link < hgsetget
         %% Runtime Defined Variables
         % Tracks where the runtime object
         visual = [];
-
+        
         % tracks the xdata and ydata of the visual patch object.
         vertices = struct('xdata',[],'ydata',[]);
         
@@ -68,14 +70,17 @@ classdef Link < hgsetget
         previousVertices = struct('xdata',[],'ydata',[]);
         
         %Define behavior when one of the links is clicked.
-
+        
         buttonDownFcn = [];
+        
+        % Robot object.
+        robot
         
         % World that the link belongs to.
         world
         
-        trackingPoints = {};
-
+        trackingPoints = [];
+        
     end
     
     methods
@@ -89,32 +94,40 @@ classdef Link < hgsetget
             set(obj,'width',val*2);
             set(obj,'height',val*2);
         end
-
+        
         function obj = set.width(obj,val)
             if val < 0
                 error('Width must be zero or greater.');
             end
             obj.width = val;
-        end        
-
+        end
+        
         function obj = set.height(obj,val)
             if val < 0
                 error('Height must be zero or greater.');
             end
             obj.height = val;
-        end        
-
+        end
+        
+        function obj = set.fillColor(obj,val)
+            obj.fillColor = val;
+            if ~isempty(obj.visual)
+                set(obj.visual,'FaceColor',val);
+            end
+            
+        end
+        
         
         function GeneratePoints(obj,varargin)
             % Generates a set default set of coordinates for the link out
             % of shape data.
-
+            
             switch obj.type
                 case 'Custom'
                     if length(varargin) == 2;
                         obj.vertices.xdata = custom_x;
                         obj.vertices.ydata = custom_y;
-                    end                   
+                    end
                 case 'Rectangle'
                     if (obj.cap_pct == 0)
                         obj.num_points = 4;
@@ -147,7 +160,7 @@ classdef Link < hgsetget
             obj.currentPosition = destination;
             set(obj.visual,...
                 'XData',obj.vertices.xdata+obj.currentPosition(1),...
-                'YData',obj.vertices.ydata+obj.currentPosition(2));            
+                'YData',obj.vertices.ydata+obj.currentPosition(2));
         end
         
         function AddTrackingPoint(obj,name,position)

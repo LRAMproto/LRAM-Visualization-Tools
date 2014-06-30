@@ -2,7 +2,7 @@ classdef VisualizerCore < hgsetget
     % VisualizerCore version 1.0 (dev)
     % Core function for LRAM Visualizer. Manipulates base information on
     % the robot used by various sub-programs.
-    %    
+    %
     properties
         name
         % Name for referring to a visualizer core object. Mainly for future
@@ -13,7 +13,7 @@ classdef VisualizerCore < hgsetget
         
         % Keeps track of the file from which settings are loaded.
         settingsFile = []
-
+        
         % Keeps track of the settings during runtime for the program.
         settings
         
@@ -27,7 +27,7 @@ classdef VisualizerCore < hgsetget
         % Specifies whether the program will display debugging messages.
         debugMode = 0;
     end
-
+    
     methods
         function obj = VisualizerCore()
             % Constructor method.
@@ -66,10 +66,10 @@ classdef VisualizerCore < hgsetget
         end
         
         function SaveSettingsTo(obj, filename)
-            % Saves a set of settings to a specified file path            
+            % Saves a set of settings to a specified file path
             if (obj.debugMode)
                 fprintf('## Core saving settings to [%s]\n',filename);
-            end            
+            end
             settings = obj.settings;
             save(filename,'-struct','settings');
         end
@@ -79,6 +79,11 @@ classdef VisualizerCore < hgsetget
         UpdateEvent
         % Every program using viscore to get and set information about the
         % visualizer must listen to the VisualizerCore 'Update' event.
+        PostUpdateEvent
+        % To avoid pulling data from an update before a set of calculations
+        % are complete, the PostUpdateEvent can be used to retrieve data
+        % when the update is finished.
+        
         ShutdownEvent
         % To be defined in future programs. Hopefully, this can shut down
         % any program that is being used by the visualizer, or at least
@@ -86,5 +91,5 @@ classdef VisualizerCore < hgsetget
         TestMessageEvent
         % For testing event listeners. Nothing important should be done
         % with this.
-    end   
+    end
 end

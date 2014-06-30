@@ -12,6 +12,8 @@ classdef VisualizerPlugin < hgsetget
         % Uniquely identifying name of program.
         name
         
+        guiPluginHandle
+        
         % Core
         core
         
@@ -21,13 +23,20 @@ classdef VisualizerPlugin < hgsetget
         
         % Core Listener
         updateListener;
-        shutdownListener;              
-
+        
+        postUpdateListener;
+        
+        shutdownListener;
+        
         debugMode = 0;
         
         % Runtime defined functions for updating and shutting down
-        update_fcn;
-        shutdown_fcn;
+        
+        updateFcn;
+        
+        postUpdateFcn;
+        
+        shutdownFcn;
         
     end
     
@@ -42,7 +51,8 @@ classdef VisualizerPlugin < hgsetget
             obj.name = name;
             obj.updateListener = addlistener(obj.core,'UpdateEvent',@obj.ViscoreUpdate);
             obj.shutdownListener = addlistener(obj.core,'ShutdownEvent',@obj.ViscoreShutdown);
-        end      
+            obj.postUpdateListener = addlistener(obj.core,'PostUpdateEvent',@obj.ViscorePostUpdate);
+        end
         
         function AddToPlugins(obj)
             if(obj.debugMode)
@@ -56,36 +66,52 @@ classdef VisualizerPlugin < hgsetget
         
         function LoadGui(obj)
             % Loads the GUI pointed to by the plugin.
-            obj.guiFcn(obj.core.programHandles);
+            obj.guiFcn(obj);
         end
         
+        function ConnectGui(obj,guiHandle)
+            obj.core.guiPluginHandles(length(obj.core.guiPluginHandles)+1) = guiHandle;
+            obj.guiPluginHandle = guiHandle;
+            notify(obj.core,'UpdateEvent');
+        end
         
         %% Visualizer Event Functions
         
         function obj = ViscoreUpdate(obj,core,eventdata)
             if (obj.debugMode)
-               fprintf('* [%s] hears update from core.\n',obj.name);
+                fprintf('* [%s] hears update from core.\n',obj.name);
             end
-
-            if ~isempty(obj.update_fcn)
+            
+            if ~isempty(obj.updateFcn)
                 % execute assigned shutdown function
-                obj.update_fcn(core, eventdata);
+                obj.updateFcn(core, eventdata);
             end
             
         end
         
         function obj = ViscoreShutdown(obj,core,eventdata)
             if (obj.debugMode)
-               fprintf('* [%s] hears shudown from core.\n',obj.name);
+                fprintf('* [%s] hears shudown from core.\n',obj.name);
             end
             
-            if ~isempty(obj.shutdown_fcn)
+            if ~isempty(obj.shutdownFcn)
                 % execute assigned shutdown function
-                obj.shutdown_fcn(core, eventdata);
-            end           
+                obj.shutdownFcn(core, eventdata);
+            end
+        end
+        
+        function obj = ViscorePostUpdate(obj,core,eventdata)
+            if (obj.debugMode)
+                fprintf('* [%s] hears post update from core.\n',obj.name);
+            end
+            
+            if ~isempty(obj.postUpdateFcn)
+                % execute assigned shutdown function
+                obj.postUpdateFcn(core, eventdata);
+            end
             
         end
-            
+        
     end
     
 end
