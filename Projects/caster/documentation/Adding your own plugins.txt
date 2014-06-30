@@ -1,7 +1,23 @@
-All programs connect to the core application, 'viscore'. This connection allows the core program to broadcast all changes made to the state of the robot to ancillary programs via event listeners. Hence, whenever a program modifies the state of the visualizer:
+Note:
+* The startup routine is defined in caster_settings_debug
+* Throughout the routine, every function passes a set of program handles to
+  a seperate plugin function see (controls/connect_vis_display.m, 
+  controls/connect_vis_control_panel.m)
+* each plugin startup function creates a plugin object and adds a gui
+  function to call when it starts up. Each gui function defined for a 
+  plugin will pass a VisualizerPlugin object through it.
+* after all variables are set up, updating works as follows:
+> All programs modifying a setting access the 'settings' structure of the
+  VisualizerCore.
+> Once they make a modification, they tell the core to broadcast an 
+  update signal.
+> The core sends this signal, and the display will update the visual aspect
+  of the simulation.
+> When the display is finished updating, it tells the core to broadcast a
+  Post-update signal, which tells the control panel and other listening
+  plugins to retrieve data from the updated robots and world.
 
-- The program accesses the 'settings' structure of the VisualizerCore object in the UserData field of viscore.
-- The program makes whatever modifications are necessary, then notifies the visualizer core of the update event.
-- When the Update event is triggered, all programs will respond in their own way by updating themselves.
-
-- Programs can additionally respond a certain way when the core program shuts down. One program does not have to do anything, but a shutdown function ideally should be defined.
+- Programs can additionally respond a certain way when the core program 
+  shuts down.
+  One program does not have to do anything, but a shutdown function ideally
+  should be defined.

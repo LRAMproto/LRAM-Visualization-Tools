@@ -1,0 +1,8 @@
+Last Modified: 06/30/2014
+TODO:
+[ ] Get LoadSettings function up and running for already running 
+simulations. This will require a reload event to be defined.
+[ ] Modify trajectoy.m to handle the case in which a function never reaches a target.
+[ ] Adjust measurements of visual elements of the visualizer.
+[ ] Handle display irregularities in Mac-based environments. This will 
+    likely involve some manual settings of uicontrols.

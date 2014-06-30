@@ -1,15 +1,22 @@
-This is a place where it is helpful to list my ideas for the future development of this project.
+This is a place where it is helpful to list my ideas for the
+ future development of this project.
 
 1) Parse a URDF file to load the robot's basic structure.
 
-Description: We can make a basic model of the Caster in URDF format using primatives as visual elements. We can create an interpreter in MATLAB which can extract key information about the robot, which includes information on joints.
+Description: We can make a basic model of the Caster in URDF format using
+ primatives as visual elements. We can create an interpreter in MATLAB
+ which can extract key information about the robot, which includes
+ information on joints.
 
 Pros:
 - URDF format already defined
 - URDF model can be readable in the rviz package of ROS
 - URDF uses XML, which can be easily parsed by MATLAB.
 - Once set up, making modifications would be straightforward.
-- Interpreting the URDF can be seperate from displaying it. Hence, we can design a system whichs renders a two-dimensional representation, but expand it to a three-dimensional representation later on.
+- Interpreting the URDF can be seperate from displaying it.
+ Hence, we can design a system whichs renders a two-dimensional
+ representation, but expand it to a three-dimensional representation later
+ on.
 
 Cons: 
 - Additional development time for brand-new data structures.
@@ -17,17 +24,27 @@ Cons:
 
 Resolution
 05/27/2014
-- Build an initial visualizer without the URDF interpreter, but keep this approach in mind for future development.
+- Build an initial visualizer without the URDF interpreter, but keep this
+ approach in mind for future development.
 06/19/2014
-
-- I have decided not to parse URDF for the visualizer, since a), URDF is designed for 3D systems, and b), simpler to load links, joints, etc. inside their own matlab functions.
+- I have decided not to parse URDF for the visualizer, since a), URDF is
+ designed for 3D systems, and b), simpler to load links, joints, etc.
+ inside their own matlab functions.
+06/30/2014
+- URDF may be useful as a springboard for integrating additional features,
+ but a low priority for now.
 
 2) Set up animation as a plugin:
 
-Description: Since (as of 5/27/2014) all components modify data from a 'master' program, we can have a program which continuously modifies this data such that we can view it as an animation. Going further, we could possibly render animations in popular video formats such as avi for use in presentations.
+Description: Since (as of 5/27/2014) all components modify data from a
+ 'master' object, we can have a program which continuously modifies this
+ data such that we can view it as an animation. Going further, we could 
+possibly render animations in popular video formats such as avi for use in
+ presentations.
 
 Pros:
-- Feasible with the current implementation without making extensive modifications to existing structure.
+- Feasible with the current implementation without making extensive
+ modifications to existing structure.
 Cons:
 - Additional time needed to learn video rendering.
 
@@ -35,18 +52,54 @@ Resolution:
 
 06/20/2014
 -Will investigate it when the initial program is complete.
+06/30/2014
+- Initial program is mostly complete; therefore, will begin looking into
+- visualizer program within the next few days.
 
-3) Modify architecture of the program such that everything runs within an encapsulated struct of all handles
+3) Modify architecture of the program such that everything runs within an 
+encapsulated struct of all handles
 
 Pros:
 - Feasible with current system.
 - Easier to see all objects in the system
-- Finding objects will be much faster if we search a specific set of handles for given objects.
+- Finding objects will be much faster if we search a specific set of
+ handles for given objects.
 
 Cons:
 - May take additional time to develop.
-- Every function would need to pass in a complete set of handles and interact with it in a different way.
+- Every function would need to pass in a complete set of handles and 
+interact with it in a different way.
 
 Resolution:
 - 06/23/2014
-- Refactoring code so it will follow this structure. 
+- Refactoring code so it will follow this structure.
+- 06/27/2014
+Refactoring is complete. Program now runs completely encapsulated inside 
+of the function 'caster_startup', but you can examine the program handles
+ if you run 'caster_debug');
+
+4) Increase visual complexity of casting robot.
+Pros:
+- Improved and more accurate visual display.
+Cons:
+- Additional set up time for possibly little gain.
+
+Resolution:
+-06/30/2014: Keeping things simple for now.
+
+5) Create Simulink Plugin for animating Casting robot:
+Pros:
+- Tests ease of creation of new plugin objects.
+Cons:
+- Not requested at present.
+Resolution:
+-06/30/2014: may attempt to create such a plugin in the future, but 
+focusing on more requirements for the future.
+
+6) Create a Simulink GUI which can give manual control of a simulation.
+Pros:
+- Makes for an impressive display.
+Cons:
+- Not specifically required at present.
+Resolution:
+-06/30/2014: May investigate further later.
