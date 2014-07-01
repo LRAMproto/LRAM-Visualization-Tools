@@ -22,7 +22,7 @@ function varargout = vis_control(varargin)
 
 % Edit the above text to modify the response to help vis_control_figure
 
-% Last Modified by GUIDE v2.5 29-Jun-2014 19:14:32
+% Last Modified by GUIDE v2.5 01-Jul-2014 16:23:44
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -72,7 +72,6 @@ handles.armPivotPoint = findobj(handles.robot_arm.trackingPoints,'name','Arm Piv
 handles.targetMountingPlateToFrameJoint = findobj(handles.plugin.core.settings.CastingRobot.joints,'name','Target Mounting Plate to Frame Joint');
 
 % Target
-
 handles.targetPlateToPivotJoint = findobj(handles.plugin.core.settings.CastingRobot.joints,'name','Target Plate to Pivot Joint');
 handles.targetPlate = findobj(handles.plugin.core.settings.CastingRobot.links,'name','Target Plate');
 handles.targetPlatePivot = findobj(handles.plugin.core.settings.CastingRobot.links,'name','Target Plate Pivot');
@@ -95,8 +94,7 @@ handles.display_axis = handles.world.displayAxis;
 
 handles.display_axis_parent = get(handles.display_axis,'parent');
 
-
-handles.trajectory = line('parent',handles.display_axis,'xdata',[0 2 4 6],'ydata',[0 0 0 0],'color','blue','linewidth',3);
+handles.trajectory = line('parent',handles.display_axis,'xdata',[0 2 4 6],'ydata',[0 0 0 0],'color','blue','linewidth',2);
 
 handles.UpdateTrajectory = @UpdateTrajectory;
 
@@ -149,7 +147,11 @@ function robot_mounting_plate_height_edit_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of robot_mounting_plate_height_edit as text
 %        str2double(get(hObject,'String')) returns contents of robot_mounting_plate_height_edit as a double
+if get(handles.eval_enable_checkbox,'Value')
+newheight = eval(get(hObject,'string'));
+else
 newheight = str2double(get(hObject,'String'));
+end
 handles.plugin.core.settings.misc.robot.PlatePosition = newheight;
 set(handles.robotMountingPlateToFrameJoint,'position',handles.plugin.core.settings.misc.robot.PlatePositionFcn(newheight));
 notify(handles.plugin.core,'UpdateEvent');
@@ -238,7 +240,11 @@ function target_plate_angle_edit_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of target_plate_angle_edit as text
 %        str2double(get(hObject,'String')) returns contents of target_plate_angle_edit as a double
+if get(handles.eval_enable_checkbox,'Value')
+    theta = eval(get(hObject,'string'));
+else
 theta = str2double(get(hObject,'String'));
+end
 handles.targetPlateToPivotJoint.Rotate(theta);
 notify(handles.plugin.core,'UpdateEvent');
 
@@ -265,8 +271,11 @@ function target_mounting_plate_height_edit_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of target_mounting_plate_height_edit as text
 %        str2double(get(hObject,'String')) returns contents of target_mounting_plate_height_edit as a double
 
-%TODO: Define this function
+if get(handles.eval_enable_checkbox,'Value')
+newheight = eval(get(hObject,'string'));
+else
 newheight = str2double(get(hObject,'String'));
+end
 handles.plugin.core.settings.misc.target.PlatePosition = newheight;
 set(handles.targetMountingPlateToFrameJoint,'position',handles.plugin.core.settings.misc.target.PlatePositionFcn(newheight));
 notify(handles.plugin.core,'UpdateEvent');
@@ -362,8 +371,6 @@ colors = get(hObject,'UserData');
 handles.plugin.core.settings.misc.colors.SpotColorDefault = choice;
 set(handles.spot,'fillColor',colors(choice,:));
 
-
-%TODO: Define this function
 notify(handles.plugin.core,'UpdateEvent');
 
 % --- Executes during object creation, after setting all properties.
@@ -455,7 +462,11 @@ function robot_arm_angle_edit_Callback(hObject, eventdata, handles)
 % Hints: get(hObject,'String') returns contents of robot_arm_angle_edit as text
 %        str2double(get(hObject,'String')) returns contents of robot_arm_angle_edit as a double
 
+if get(handles.eval_enable_checkbox,'Value')
+    theta = eval(get(hObject,'string'));
+else
 theta = str2double(get(hObject,'String'));
+end
 handles.armJoint.Rotate(theta);
 notify(handles.plugin.core,'UpdateEvent');
 
@@ -472,7 +483,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-
 function robot_arm_velocity_edit_Callback(hObject, eventdata, handles)
 % hObject    handle to robot_arm_velocity_edit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -480,7 +490,11 @@ function robot_arm_velocity_edit_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of robot_arm_velocity_edit as text
 %        str2double(get(hObject,'String')) returns contents of robot_arm_velocity_edit as a double
-handles.plugin.core.settings.misc.robot.arm.velocity = str2double(get(handles.robot_arm_velocity_edit,'String'));
+if get(handles.eval_enable_checkbox,'value')
+    handles.plugin.core.settings.misc.robot.arm.velocity = eval(get(handles.robot_arm_velocity_edit,'String'));
+else   
+    handles.plugin.core.settings.misc.robot.arm.velocity = str2double(get(handles.robot_arm_velocity_edit,'String'));
+end
 notify(handles.plugin.core,'UpdateEvent');
 
 % --- Executes during object creation, after setting all properties.
@@ -494,3 +508,51 @@ function robot_arm_velocity_edit_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes on button press in eval_enable_checkbox.
+function eval_enable_checkbox_Callback(hObject, eventdata, handles)
+% hObject    handle to eval_enable_checkbox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of eval_enable_checkbox
+
+
+% --- Executes on key press with focus on robot_arm_angle_edit and none of its controls.
+function robot_arm_angle_edit_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to robot_arm_angle_edit (see GCBO)
+% eventdata  structure with the following fields (see UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+
+
+
+
+% --- Executes on key press with focus on vis_control_figure and none of its controls.
+function vis_control_figure_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to vis_control_figure (see GCBO)
+% eventdata  structure with the following fields (see FIGURE)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
+
+% Code if you wished to add in the 'nudge' ability to the screen.
+
+if strcmp(eventdata.Key,'uparrow')
+    handles.armJoint.Rotate(get(handles.armJoint,'angle')+.05);
+elseif strcmp(eventdata.Key,'downarrow')
+    handles.armJoint.Rotate(get(handles.armJoint,'angle')-.05);
+elseif strcmp(eventdata.Key,'leftarrow')
+    handles.plugin.core.settings.misc.robot.arm.velocity=...
+        handles.plugin.core.settings.misc.robot.arm.velocity-0.5;
+elseif strcmp(eventdata.Key,'rightarrow')
+    handles.plugin.core.settings.misc.robot.arm.velocity=...
+        handles.plugin.core.settings.misc.robot.arm.velocity+0.5;
+else
+    disp(eventdata.Key);
+end
+notify(handles.plugin.core,'UpdateEvent');
