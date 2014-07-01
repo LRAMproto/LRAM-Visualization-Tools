@@ -13,6 +13,12 @@ cd(fileparts(mfilename('fullpath')))
 
 save('caster_default_settings','misc', 'CastingRobot');
 cd(previous);
+
+% Since we have saved these settings, we no longer need to keep them in
+% memory.
+clear('misc');
+clear('CastingRobot');
+
 end
 
 function [links,joints] = load_elements(misc)
@@ -208,6 +214,12 @@ set(ball_position_joint,...
 
 links = [frame, target_mounting_plate, robot_mounting_plate, base, arm, target_plate_pivot, target_plate, ball, root_link];
 joints = [robot_mounting_plate_to_frame_joint, target_mounting_plate_to_frame_joint, box_to_plate_joint, arm_joint, target_plate_pivot_to_plate_joint, target_plate_to_pivot_joint, ball_position_joint];
+
+% Clears things we don't need.
+
+clear('misc');
+clear('framepoints');
+
 end
 
 function misc = load_misc
