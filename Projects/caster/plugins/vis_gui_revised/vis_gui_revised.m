@@ -45,10 +45,6 @@ set(handles.display_axis,...
         'Position',ax_position,...
         'visible','off'...
 );
-%        axis off;
-%        zoom off;
-%        hold on;
-%        grid on;
 
 set(handles.plugin,'updateFcn',@ViscoreUpdate);
 set(handles.plugin,'shutdownFcn',@ViscoreShutdown);
@@ -57,7 +53,6 @@ handles.world = World(handles.display_axis, settings.CastingRobot);
 handles.world.LoadAll();
 guidata(gui, handles);
 handles.plugin.core.settings.world = handles.world;
-%handles = viscore_connect(gui,core);
 
 guidata(gui, handles);
 
