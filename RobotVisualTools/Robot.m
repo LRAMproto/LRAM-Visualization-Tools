@@ -90,14 +90,25 @@ classdef Robot < hgsetget
         function LoadAll(obj)
             for i = 1:length(obj.links)
                 obj.links(i).GeneratePoints;
-                obj.links(i).previousVertices = struct('xdata',obj.links(i).vertices.xdata,'ydata',obj.links(i).vertices.ydata);
-                obj.links(i).currentVertices = struct('xdata',obj.links(i).vertices.xdata,'ydata',obj.links(i).vertices.ydata);
+                % Making Struct field-by-field. Might be useful to
+                % re-define with the struct() keyword.
+                obj.links(i).currentVertices.xdata = obj.links(i).vertices.xdata+obj.links(1).origin(1);
+                obj.links(i).currentVertices.ydata = obj.links(i).vertices.ydata+obj.links(1).origin(2);
+                obj.links(i).previousVertices = obj.links(i).currentVertices;
+                % FIXME: Put steps to transform the base object
+                % appropriately here.
+
+                % FIXME: End Transformation code
+
+                % Loads the base shape (not transformed by joints) into the
+                % world.
+                
                 if ~isempty(obj.world)
                     if strcmp(get(obj.world.displayAxis,'type'),'axes')
                         patchdata = patch(...
                             'Parent',obj.world.displayAxis,...
-                            'XData',obj.links(i).vertices.xdata+obj.links(i).origin(1),...
-                            'YData',obj.links(i).vertices.ydata+obj.links(i).origin(2),...
+                            'XData',obj.links(i).vertices.xdata,...
+                            'YData',obj.links(i).vertices.ydata,...
                             'Visible',obj.links(i).visible,...
                             'ButtonDownFcn',obj.links(i).buttonDownFcn,...
                             'FaceColor',obj.links(i).fillColor,...
