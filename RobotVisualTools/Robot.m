@@ -179,6 +179,27 @@ classdef Robot < hgsetget
             end
         end
         
+        function DisplayJoints(obj)
+            % Displays verbose data for all joints in a world.           
+            disp('Joints:');
+            for i = 1:length(obj.joints)
+                disp(obj.joints(i));
+            end
+        end
+        
+        function DisplayLinks(obj)
+            % Displays verbose data of all joint objects in a world.
+            disp('Links:');
+            for i = 1:length(obj.links)
+                disp(obj.links(i));
+            end
+        end
+        
+        function DisplayAll(obj)
+            % Displays relevant data for all objects.
+            obj.DisplayLinks;
+            obj.DisplayJoints;
+        end
         
     end
     

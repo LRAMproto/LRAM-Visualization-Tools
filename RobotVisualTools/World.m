@@ -106,23 +106,16 @@ classdef World < hgsetget
         end
         %% Display Functions
         function DisplayJoints(obj)
-            % Displays verbose data for all joints in a world.
-            disp('Joints:');
-            for i = 1:length(obj.joints)
-                disp(obj.joints(i));
+            for i=1:length(obj.robots)
+                obj.robots(i).DisplayJoints();
             end
         end
-        
         function DisplayLinks(obj)
-            % Displays verbose data of all joint objects in a world.
-            disp('Links:');
-            for i = 1:length(obj.links)
-                disp(obj.links(i));
-            end
+            for i=1:length(obj.robots)
+                obj.robots(i).DisplayLinks();
+            end            
         end
-        
-        function DisplayAll(obj)
-            % Displays relevant data for all objects.
+    	function DisplayAll(obj)
             obj.DisplayLinks;
             obj.DisplayJoints;
         end
