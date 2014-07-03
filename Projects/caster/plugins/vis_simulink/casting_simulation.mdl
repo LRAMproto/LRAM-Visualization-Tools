@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.6"
+    ComputedModelVersion    "1.8"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -56,7 +56,7 @@ Model {
 	LoadSaveID		"0"
 	Extents			[571.0, 362.0]
 	ZoomFactor		[1.0]
-	Offset			[72.0, -66.0]
+	Offset			[82.0, -11.0]
       }
     }
   }
@@ -66,9 +66,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "David"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Tue Jul 01 15:52:02 2014"
-  RTWModifiedTimeStamp	  326130088
-  ModelVersionFormat	  "1.%<AutoIncrement:6>"
+  LastModifiedDate	  "Thu Jul 03 13:19:14 2014"
+  RTWModifiedTimeStamp	  326293404
+  ModelVersionFormat	  "1.%<AutoIncrement:8>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -776,12 +776,25 @@ Model {
     SIDHighWatermark	    "4"
     Block {
       BlockType		      M-S-Function
-      Name		      "Caster Model"
+      Name		      "Caster Visualizer Display"
       SID		      "2"
       Ports		      [1]
-      Position		      [330, 99, 385, 131]
+      Position		      [330, 101, 405, 239]
       ZOrder		      2
       FunctionName	      "caster_block_update"
+      Object {
+	$PropName		"MaskObject"
+	$ObjectID		19
+	$ClassName		"Simulink.Mask"
+	Type			"Display Function for Caster Visualizer"
+	Description		"While caster_startup_simulink is running, this block can update the visual display provided the correct"
+	" inputs are connected.\n\nAs you run the simulation, the input port will adjust the angle at which the arm moves on t"
+	"he screen in radians."
+	Help			"<h1> Opening the Visualizer </h1>\n<ol>\n<li>Enter in command console:\n\n<code>caster_startup_simulink</code"
+	">\n\nAlternately: \n\n<code>ph = caster_startup_simulink_debug</code>\n\n</li>\n<li>\nClick the run button.\n</li>\n<"
+	"/ol>"
+	Display			"port_label('input',1,'Arm Position');"
+      }
     }
     Block {
       BlockType		      Sin
@@ -798,8 +811,8 @@ Model {
     Line {
       SrcBlock		      "Sine Wave"
       SrcPort		      1
-      Points		      [40, 0; 0, 20]
-      DstBlock		      "Caster Model"
+      Points		      [40, 0; 0, 75]
+      DstBlock		      "Caster Visualizer Display"
       DstPort		      1
     }
   }

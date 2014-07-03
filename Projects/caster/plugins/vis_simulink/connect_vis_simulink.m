@@ -7,7 +7,7 @@ end
 ph.SimulinkTest = VisualizerPlugin('Simulink Input',ph.core);
 set(ph.SimulinkTest,'debugMode',0);
 ph.SimulinkTest.AddToPlugins();
-set_param('casting_simulation/Caster Model','userdata',ph.SimulinkTest);
+set_param('casting_simulation/Caster Visualizer Display','userdata',ph.SimulinkTest);
 
 notify(ph.core,'UpdateEvent');
 program_handles = ph;
