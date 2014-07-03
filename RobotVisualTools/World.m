@@ -37,8 +37,6 @@ classdef World < hgsetget
             obj.displayAxis = displayAxis;
             obj.robots = robots;
         end
-        % TODO: Remove 'makejointtree' from World once the Robot class has
-        % been fully integrated.
         
         function obj = set.robots(obj,bots)
             obj.robots = bots;

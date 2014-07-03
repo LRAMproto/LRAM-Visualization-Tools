@@ -1,6 +1,6 @@
 function gui = vis_gui_revised(plugin)
 % A visual display to connect to the visualizer core.
-% TODO: Refactor to take advantage of plugin objects.
+
 handles.plugin = plugin;
 
 % Makes figure for single monitor.

@@ -33,9 +33,7 @@ classdef Link < hgsetget
         originAngle = 0;
         % Specifies where the object is rotated.
         originAnglePivotPoint = [0 0];
-        % FIXME: Deprecate the 'current position' of the link, as this
-        % isn't used.
-        currentPosition = [0 0];
+
         % specifies the curvature of drawn objects.
         cap_pct = 0;
         
@@ -62,10 +60,7 @@ classdef Link < hgsetget
         
         % tracks the xdata and ydata of the visual patch object.
         vertices = struct('xdata',[],'ydata',[]);
-        
-        % TODO: Define optimization steps in the World class that take
-        % advantage of currentVertices and previousVertices
-        
+               
         currentVertices = struct('xdata',[],'ydata',[]);
         previousVertices = struct('xdata',[],'ydata',[]);
         
