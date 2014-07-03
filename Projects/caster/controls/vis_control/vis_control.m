@@ -22,7 +22,7 @@ function varargout = vis_control(varargin)
 
 % Edit the above text to modify the response to help vis_control_figure
 
-% Last Modified by GUIDE v2.5 01-Jul-2014 16:23:44
+% Last Modified by GUIDE v2.5 03-Jul-2014 11:59:51
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
