@@ -56,6 +56,7 @@ settings = handles.plugin.core.settings;
 handles.world = World(handles.display_axis, settings.CastingRobot);
 handles.world.LoadAll();
 guidata(gui, handles);
+handles.plugin.core.settings.world = handles.world;
 %handles = viscore_connect(gui,core);
 
 guidata(gui, handles);
