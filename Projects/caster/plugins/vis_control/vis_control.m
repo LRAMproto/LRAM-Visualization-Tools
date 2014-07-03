@@ -56,34 +56,61 @@ function vis_control_OpeningFcn(hObject, eventdata, handles, varargin)
 handles.output = hObject;
 
 handles.plugin = varargin{1};
-% TODO: Re-Organize Programs into a logical fashion instead of a big mess.
 
 handles.plugin.ConnectGui(gcf);
-
+% handles.joints and handles.links are structs which collect information on
+% all joints that we want to retain information for during the simulation.
+%
 % Robot Mounting Plate.
-handles.robotMountingPlateToFrameJoint = findobj(handles.plugin.core.settings.CastingRobot.joints,'name','Robot Mounting Plate to Frame Joint');
+handles.joints.robotMountingPlateToFrameJoint = ...
+    findobj(handles.plugin.core.settings.CastingRobot.joints,...
+    'name','Robot Mounting Plate to Frame Joint');
+% Robot Box
+handles.joints.boxToMountingPlateJoint = ...
+    findobj(handles.plugin.core.settings.CastingRobot.joints,...
+    'name','Box to Mounting Plate Joint');
 % Robot Arm
-handles.armJoint = findobj(handles.plugin.core.settings.CastingRobot.joints,'name','Arm Joint');
-% TODO: Redefine using findobj
-handles.robot_arm = handles.armJoint.childData;
-handles.armPivotPoint = findobj(handles.robot_arm.trackingPoints,'name','Arm Pivot Point');
+handles.joints.armJoint = ...
+    findobj(handles.plugin.core.settings.CastingRobot.joints,...
+    'name','Arm Joint');
+handles.links.arm = ...
+    findobj(handles.plugin.core.settings.CastingRobot.links,...
+    'name','Arm');
+handles.trackingPoints.armPivotPoint = ...
+    findobj(handles.links.arm.trackingPoints,...
+    'name','Arm Pivot Point');
 
 % Target Mounting Plate
-handles.targetMountingPlateToFrameJoint = findobj(handles.plugin.core.settings.CastingRobot.joints,'name','Target Mounting Plate to Frame Joint');
+handles.joints.targetMountingPlateToFrameJoint = ...
+    findobj(handles.plugin.core.settings.CastingRobot.joints,...
+    'name','Target Mounting Plate to Frame Joint');
 
 % Target
-handles.targetPlateToPivotJoint = findobj(handles.plugin.core.settings.CastingRobot.joints,'name','Target Plate to Pivot Joint');
-handles.targetPlate = findobj(handles.plugin.core.settings.CastingRobot.links,'name','Target Plate');
-handles.targetPlatePivot = findobj(handles.plugin.core.settings.CastingRobot.links,'name','Target Plate Pivot');
-handles.targetPivotPoint = findobj(handles.targetPlatePivot.trackingPoints,'name','Target Pivot Point');
-handles.targetPlatePivotToTargetMountingPlateJoint = findobj(handles.plugin.core.settings.CastingRobot.joints,'name','Target Plate Pivot to Target Mounting Plate Joint');
-handles.boxToMountingPlateJoint = findobj(handles.plugin.core.settings.CastingRobot.joints,'name','Box to Mounting Plate Joint');
+handles.joints.targetPlateToPivotJoint = ...
+    findobj(handles.plugin.core.settings.CastingRobot.joints,...
+    'name','Target Plate to Pivot Joint');
+handles.links.targetPlate = ...
+    findobj(handles.plugin.core.settings.CastingRobot.links,...
+    'name','Target Plate');
+handles.links.targetPlatePivot = ...
+    findobj(handles.plugin.core.settings.CastingRobot.links,...
+    'name','Target Plate Pivot');
+handles.trackingPoints.targetPivotPoint = ...
+    findobj(handles.links.targetPlatePivot.trackingPoints,...
+    'name','Target Pivot Point');
+handles.links.targetPlatePivotToTargetMountingPlateJoint = ...
+    findobj(handles.plugin.core.settings.CastingRobot.joints,...
+    'name','Target Plate Pivot to Target Mounting Plate Joint');
 
 % Position of ball with respect to world.
 
-handles.spot = findobj(handles.plugin.core.settings.CastingRobot.links,'name','Ball');
+handles.links.spot = ...
+    findobj(handles.plugin.core.settings.CastingRobot.links,...
+    'name','Ball');
 
-handles.ballPositionJoint = findobj(handles.plugin.core.settings.CastingRobot.joints,'name','Ball Position Joint');
+handles.joints.spotPositionJoint = ...
+    findobj(handles.plugin.core.settings.CastingRobot.joints,...
+    'name','Ball Position Joint');
 
 set(handles.plugin,'updateFcn',@ViscoreUpdate);
 set(handles.plugin,'postUpdateFcn',@ViscorePostUpdate);
@@ -94,7 +121,12 @@ handles.display_axis = handles.world.displayAxis;
 
 handles.display_axis_parent = get(handles.display_axis,'parent');
 
-handles.trajectory = line('parent',handles.display_axis,'xdata',[0 2 4 6],'ydata',[0 0 0 0],'color','blue','linewidth',2);
+handles.trajectory = line(...
+    'parent',handles.display_axis,...
+    'xdata',[0 2 4 6],...
+    'ydata',[0 0 0 0],...
+    'color','blue',...
+    'linewidth',2);
 
 handles.UpdateTrajectory = @UpdateTrajectory;
 
@@ -137,7 +169,7 @@ if get(hObject,'Value') == 1
     set(handles.target_plate_angle_edit,'enable','on');
 end
 
-handles.targetPlate.ToggleVisibility();
+handles.links.targetPlate.ToggleVisibility();
 
 
 function robot_mounting_plate_height_edit_Callback(hObject, eventdata, handles)
@@ -147,13 +179,17 @@ function robot_mounting_plate_height_edit_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of robot_mounting_plate_height_edit as text
 %        str2double(get(hObject,'String')) returns contents of robot_mounting_plate_height_edit as a double
+
+% Checks to see if evaluation is enabled
 if get(handles.eval_enable_checkbox,'Value')
 newheight = eval(get(hObject,'string'));
 else
 newheight = str2double(get(hObject,'String'));
 end
 handles.plugin.core.settings.misc.robot.PlatePosition = newheight;
-set(handles.robotMountingPlateToFrameJoint,'position',handles.plugin.core.settings.misc.robot.PlatePositionFcn(newheight));
+set(handles.joints.robotMountingPlateToFrameJoint,...
+    'position',...
+    handles.plugin.core.settings.misc.robot.PlatePositionFcn(newheight));
 notify(handles.plugin.core,'UpdateEvent');
 
 % --- Executes during object creation, after setting all properties.
@@ -180,7 +216,7 @@ function robot_peg_x_edit_Callback(hObject, eventdata, handles)
 newX = str2double(get(hObject,'String'));
 oldY = handles.plugin.core.settings.misc.robot.pegPosition(2);
 handles.plugin.core.settings.misc.robot.pegPosition = [newX, oldY];
-set(handles.boxToMountingPlateJoint,'position',...
+set(handles.joints.boxToMountingPlateJoint,'position',...
     handles.plugin.core.settings.misc.robot.PegPositionFcn(...
     handles.plugin.core.settings.misc.robot.pegPosition));
 
@@ -212,7 +248,7 @@ function robot_peg_y_edit_Callback(hObject, eventdata, handles)
 newY = str2double(get(hObject,'String'));
 oldX = handles.plugin.core.settings.misc.robot.pegPosition(1);
 handles.plugin.core.settings.misc.robot.pegPosition = [oldX, newY];
-set(handles.boxToMountingPlateJoint,'position',...
+set(handles.joints.boxToMountingPlateJoint,'position',...
     handles.plugin.core.settings.misc.robot.PegPositionFcn(...
     handles.plugin.core.settings.misc.robot.pegPosition));
 
@@ -245,7 +281,7 @@ if get(handles.eval_enable_checkbox,'Value')
 else
 theta = str2double(get(hObject,'String'));
 end
-handles.targetPlateToPivotJoint.Rotate(theta);
+handles.joints.targetPlateToPivotJoint.Rotate(theta);
 notify(handles.plugin.core,'UpdateEvent');
 
 
@@ -277,7 +313,7 @@ else
 newheight = str2double(get(hObject,'String'));
 end
 handles.plugin.core.settings.misc.target.PlatePosition = newheight;
-set(handles.targetMountingPlateToFrameJoint,'position',handles.plugin.core.settings.misc.target.PlatePositionFcn(newheight));
+set(handles.joints.targetMountingPlateToFrameJoint,'position',handles.plugin.core.settings.misc.target.PlatePositionFcn(newheight));
 notify(handles.plugin.core,'UpdateEvent');
 
 % --- Executes during object creation, after setting all properties.
@@ -304,7 +340,7 @@ function target_peg_x_edit_Callback(hObject, eventdata, handles)
 newX = str2double(get(hObject,'String'));
 oldY = handles.plugin.core.settings.misc.target.pegPosition(2);
 handles.plugin.core.settings.misc.target.pegPosition = [newX, oldY];
-set(handles.targetPlatePivotToTargetMountingPlateJoint,'position',...
+set(handles.links.targetPlatePivotToTargetMountingPlateJoint,'position',...
     handles.plugin.core.settings.misc.target.PegPositionFcn(...
     handles.plugin.core.settings.misc.target.pegPosition));
 
@@ -336,7 +372,7 @@ function target_peg_y_edit_Callback(hObject, eventdata, handles)
 newY = str2double(get(hObject,'String'));
 oldX = handles.plugin.core.settings.misc.target.pegPosition(1);
 handles.plugin.core.settings.misc.target.pegPosition = [oldX, newY];
-set(handles.targetPlatePivotToTargetMountingPlateJoint,'position',...
+set(handles.links.targetPlatePivotToTargetMountingPlateJoint,'position',...
     handles.plugin.core.settings.misc.target.PegPositionFcn(...
     handles.plugin.core.settings.misc.target.pegPosition));
 
@@ -369,7 +405,7 @@ end
 choice = get(hObject,'Value');
 colors = get(hObject,'UserData');
 handles.plugin.core.settings.misc.colors.SpotColorDefault = choice;
-set(handles.spot,'fillColor',colors(choice,:));
+set(handles.links.spot,'fillColor',colors(choice,:));
 
 notify(handles.plugin.core,'UpdateEvent');
 
@@ -412,16 +448,16 @@ set(handles.robot_peg_y_edit,'String',handles.plugin.core.settings.misc.robot.pe
 set(handles.target_peg_x_edit,'String',handles.plugin.core.settings.misc.target.pegPosition(1));
 set(handles.target_peg_y_edit,'String',handles.plugin.core.settings.misc.target.pegPosition(2));
 
-set(handles.target_plate_angle_edit,'String',get(handles.targetPlateToPivotJoint,'angle'));
-set(handles.robot_arm_angle_edit,'String',get(handles.armJoint,'angle'));
+set(handles.target_plate_angle_edit,'String',get(handles.joints.targetPlateToPivotJoint,'angle'));
+set(handles.robot_arm_angle_edit,'String',get(handles.joints.armJoint,'angle'));
 set(handles.robot_mounting_plate_height_edit,'String',handles.plugin.core.settings.misc.robot.PlatePosition);
 set(handles.target_mounting_plate_height_edit,'String',handles.plugin.core.settings.misc.target.PlatePosition);
 set(handles.robot_arm_velocity_edit,'String',num2str(handles.plugin.core.settings.misc.robot.arm.velocity));
 vel = handles.plugin.core.settings.misc.robot.arm.velocity;
-pos = get(handles.armJoint,'angle');
+pos = get(handles.joints.armJoint,'angle');
 pos = pos - pi;
-plate_height = get(handles.robotMountingPlateToFrameJoint,'position');
-pivot_point = get(handles.armPivotPoint,'worldPosition');
+plate_height = get(handles.joints.robotMountingPlateToFrameJoint,'position');
+pivot_point = get(handles.trackingPoints.armPivotPoint,'worldPosition');
 handles.UpdateTrajectory(handles,vel,pos,pivot_point);
 set(handles.connection_status_display,'string','UPDATED');
 guidata(fig,handles);
@@ -438,7 +474,7 @@ t = linspace(0,0.5,10);
 theta = Ri;
 omega = [0 0 Vi];
 
-L   = get(handles.robot_arm,'width')/2; % length of arm
+L   = get(handles.links.arm,'width')/2; % length of arm
 
 Rx  = L*sin(theta);
 Ry  = -L*cos(theta);
@@ -447,12 +483,12 @@ Vo  = cross(omega,Ro);
 
 Yo = pivot_point(2); % This is the position of the rotating axis
 Xo = pivot_point(1);
-target = handles.targetPivotPoint.worldPosition; % Location of target from lower left
+target = handles.trackingPoints.targetPivotPoint.worldPosition; % Location of target from lower left
 %[positions,velocities] = trajectory(t,Vo,Ro,Xo,Yo,target);
 [positions,velocities] = old_trajectory(t,Vo,Ro,Xo,Yo);
 set(handles.trajectory,'XData',positions(1,:),'YData',positions(2,:));
 set(handles.display_axis,'XLim',[-0.5 3.31],'YLim',[0 2.54]);
-handles.ballPositionJoint.MoveXY(positions(1,length(positions)),positions(2,length(positions)));
+handles.joints.spotPositionJoint.MoveXY(positions(1,length(positions)),positions(2,length(positions)));
 
 function robot_arm_angle_edit_Callback(hObject, eventdata, handles)
 % hObject    handle to robot_arm_angle_edit (see GCBO)
@@ -467,7 +503,7 @@ if get(handles.eval_enable_checkbox,'Value')
 else
 theta = str2double(get(hObject,'String'));
 end
-handles.armJoint.Rotate(theta);
+handles.joints.armJoint.Rotate(theta);
 notify(handles.plugin.core,'UpdateEvent');
 
 % --- Executes during object creation, after setting all properties.
@@ -543,9 +579,9 @@ function vis_control_figure_KeyPressFcn(hObject, eventdata, handles)
 % Code if you wished to add in the 'nudge' ability to the screen.
 
 if strcmp(eventdata.Key,'uparrow')
-    handles.armJoint.Rotate(get(handles.armJoint,'angle')+.05);
+    handles.joints.armJoint.Rotate(get(handles.joints.armJoint,'angle')+.05);
 elseif strcmp(eventdata.Key,'downarrow')
-    handles.armJoint.Rotate(get(handles.armJoint,'angle')-.05);
+    handles.joints.armJoint.Rotate(get(handles.joints.armJoint,'angle')-.05);
 elseif strcmp(eventdata.Key,'leftarrow')
     handles.plugin.core.settings.misc.robot.arm.velocity=...
         handles.plugin.core.settings.misc.robot.arm.velocity-0.5;
