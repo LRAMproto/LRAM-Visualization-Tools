@@ -49,31 +49,51 @@ classdef VisualizerPlugin < hgsetget
             obj.core = core;
             
             obj.name = name;
-            obj.updateListener = addlistener(obj.core,'UpdateEvent',@obj.ViscoreUpdate);
-            obj.shutdownListener = addlistener(obj.core,'ShutdownEvent',@obj.ViscoreShutdown);
-            obj.postUpdateListener = addlistener(obj.core,'PostUpdateEvent',@obj.ViscorePostUpdate);
+
         end
         
         function AddToPlugins(obj)
             if(obj.debugMode)
                 fprintf('* Adding plugin [%s] to core plugins.\n',obj.name);
             end
-            
-            obj.core.plugins = [obj.core.plugins,obj];
-            %obj.programHandles.core.plugins(length(obj.programHandles.core.plugins)+1) = handle(obj);
+            % Registers event listeners.
+            obj.updateListener = addlistener(obj.core,'UpdateEvent',@obj.ViscoreUpdate);
+            obj.shutdownListener = addlistener(obj.core,'ShutdownEvent',@obj.ViscoreShutdown);
+            obj.postUpdateListener = addlistener(obj.core,'PostUpdateEvent',@obj.ViscorePostUpdate);            
+            % Adds the plugin to the core.
+            obj.core.plugins = union(obj.core.plugins,obj);
             
         end
+        
+        function RemoveFromPlugins(obj)
+            if(obj.debugMode)
+                fprintf('* Removing plugin [%s] from core plugins.\n',obj.name);
+            end
+            % Removes the plugin from the core.
+            obj.core.plugins = setdiff(obj.core.plugins,obj);
+            % Removes event listeners
+            delete(obj.updateListener);
+            delete(obj.shutdownListener);
+            delete(obj.postUpdateListener);            
+        end        
         
         function LoadGui(obj)
             % Loads the GUI pointed to by the plugin.
             obj.guiFcn(obj);
         end
+
+        function CloseGui(obj)
+            delete(obj.guiPluginHandle);
+            obj.guiPluginHandle = [];
+        end
+        
         
         function ConnectGui(obj,guiHandle)
-            obj.core.guiPluginHandles(length(obj.core.guiPluginHandles)+1) = guiHandle;
+            obj.core.guiPluginHandles = union(obj.core.guiPluginHandles,guiHandle);
             obj.guiPluginHandle = guiHandle;
             notify(obj.core,'UpdateEvent');
-        end
+        end        
+        
         
         %% Visualizer Event Functions
         
