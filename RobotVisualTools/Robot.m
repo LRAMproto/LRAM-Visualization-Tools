@@ -15,6 +15,8 @@ classdef Robot < hgsetget
         % Points of articulation allowing link objects to move.
         joints
 
+        jointQueue
+        
         % For debugging purposes.
         updateStepTime = 0;
         
@@ -26,11 +28,11 @@ classdef Robot < hgsetget
             % Generates a robot object given the nanme, links, and joints.
             obj.name = name;
             obj.links = links;
-            obj.joints = joints;
+            obj.PutJoints(joints);          
             for i= 1:length(links)
                 links(i).robot = obj;
-                joints(i).robot = obj;
             end
+            
         end
         
         function MakeJointTree(obj)
@@ -123,6 +125,9 @@ classdef Robot < hgsetget
         end
         
         function UpdateVisual(obj)
+
+            isUpdated = zeros(1,length(obj.joints));
+
             for i = 1:length(obj.joints)
                 if obj.updateStepTime > 0
                     pause(obj.updateStepTime)
@@ -188,6 +193,7 @@ classdef Robot < hgsetget
                     set(child.visual,'XData',xdata,'YData',ydata);
                 end
             end
+
         end
         
         function DisplayJoints(obj)
@@ -211,6 +217,71 @@ classdef Robot < hgsetget
             obj.DisplayLinks;
             obj.DisplayJoints;
         end
+
+        %% Joint Addition/Removal Operations
+        % These operations allow for joints to be sorted in such a way that
+        % more efficient updating operations take place.
+        
+        function RankJoints(obj)
+            % Ranks are based on how many transformations take place to
+            % move this joint.
+            for i = 1:length(obj.joints)
+                obj.joints(i).rank = 0;
+                cj = obj.joints(i);
+                while ~isempty(cj)
+                    obj.joints(i).rank = obj.joints(i).rank + 1;
+                    results = findobj(obj.joints,'child',cj.parent);
+                    if numel(results) > 0
+                        cj = results(1);
+                    else
+                        cj = [];
+                    end
+                    
+                end               
+                
+            end
+            
+        end
+        
+        function SortJoints(obj)
+            % Sorts joints based on rank, allowing for faster updates. This
+            % is an in-place sort.
+            obj.RankJoints();
+            for i=1:length(obj.joints)
+                for j = i:length(obj.joints)
+                    if obj.joints(j).rank > obj.joints(i).rank
+                        temp = obj.joints(i);
+                        obj.joints(i) = obj.joints(j);
+                        obj.joints(j) = temp;
+                    end
+                end
+                        
+            end
+        end
+
+        function PutJoints(obj,joints)
+            % Accepts a set of joint objects rather than adding and sorting
+            % indvidually.
+            obj.joints = joints;
+            for i=1:length(obj.joints)
+                obj.joints(i).robot = obj;                
+            end            
+            obj.SortJoints();
+        end
+        
+        function AddJoint(obj,joint)
+            % Adds a single joint.
+            obj.joints = union(obj.joints,joint);
+            obj.SortJoints();
+        end
+        
+        function RemoveJoint(obj,joint)
+            % Removes a single joint.
+            % Disassociates the joint with the robot.
+            joint.robot = [];
+            obj.joints = setdiff(obj.joints,joint);
+            obj.SortJoints();
+        end        
         
     end
     

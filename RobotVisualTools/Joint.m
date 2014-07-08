@@ -4,8 +4,8 @@ classdef Joint < hgsetget
     
     properties
         % Unique name for a link for searching purposes.
-        name = 'Undefined'
-        
+        name = [];
+        rank = 1;
         tag = 'Undefined'
         % Link type.
         % * Fixed: No rotation
@@ -100,7 +100,9 @@ classdef Joint < hgsetget
         function MoveXY(obj,x,y)
             if isfloat([x,y]) && isequal(size([x,y]),[1,2])
                 obj.position = [x,y];
+            if ~isempty(obj.world) && obj.world.autoUpdate == 1
                 obj.world.UpdateVisual();
+            end
             else
                 error('invalid input');
             end

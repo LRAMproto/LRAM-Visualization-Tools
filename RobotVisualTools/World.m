@@ -29,6 +29,12 @@ classdef World < hgsetget
         % manually. This might be helpful if you wanted to change a ton of
         % variables before rendering.
         autoUpdate = 1;
+
+        debugMode = 0;
+        
+        updateTimes = [];
+        avgUpdateTime = 0;
+        
     end
     
     methods
@@ -77,9 +83,20 @@ classdef World < hgsetget
         
         function UpdateVisual(obj)
             % Updates the visual simulation.
-            for i = 1:length(obj.robots)
-                obj.robots(i).UpdateVisual
+            if obj.debugMode == 1
+                tic
             end
+            
+            for i = 1:length(obj.robots)
+                obj.robots(i).UpdateVisual();
+            end
+
+            if obj.debugMode == 1
+                updateTime = toc;
+                obj.updateTimes = [obj.updateTimes,updateTime];
+                obj.avgUpdateTime = sum(obj.updateTimes)/length(obj.updateTimes);
+            end            
+            
         end
         
         function LoadAll(obj)

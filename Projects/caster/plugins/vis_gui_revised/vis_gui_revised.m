@@ -50,6 +50,7 @@ set(handles.plugin,'updateFcn',@ViscoreUpdate);
 set(handles.plugin,'shutdownFcn',@ViscoreShutdown);
 settings = handles.plugin.core.settings;
 handles.world = World(handles.display_axis, settings.CastingRobot);
+set(handles.world,'autoUpdate',0,'debugMode',1);
 handles.world.LoadAll();
 guidata(gui, handles);
 handles.plugin.core.settings.world = handles.world;
