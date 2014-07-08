@@ -22,6 +22,9 @@ classdef VisualizerPlugin < hgsetget
         guiFcn
         
         % Core Listener
+        
+        preUpdateListener;
+        
         updateListener;
         
         postUpdateListener;
@@ -31,6 +34,8 @@ classdef VisualizerPlugin < hgsetget
         debugMode = 0;
         
         % Runtime defined functions for updating and shutting down
+        
+        preUpdateFcn;
         
         updateFcn;
         
@@ -57,6 +62,7 @@ classdef VisualizerPlugin < hgsetget
                 fprintf('* Adding plugin [%s] to core plugins.\n',obj.name);
             end
             % Registers event listeners.
+            obj.preUpdateListener = addlistener(obj.core,'PreUpdateEvent',@obj.ViscorePreUpdate);
             obj.updateListener = addlistener(obj.core,'UpdateEvent',@obj.ViscoreUpdate);
             obj.shutdownListener = addlistener(obj.core,'ShutdownEvent',@obj.ViscoreShutdown);
             obj.postUpdateListener = addlistener(obj.core,'PostUpdateEvent',@obj.ViscorePostUpdate);            
@@ -96,6 +102,17 @@ classdef VisualizerPlugin < hgsetget
         
         
         %% Visualizer Event Functions
+
+        function obj = ViscorePreUpdate(obj,core,eventdata)
+            if (obj.debugMode)
+                fprintf('* [%s] hears pre update from core.\n',obj.name);
+            end
+            
+            if ~isempty(obj.updateFcn)
+                % execute assigned shutdown function
+                obj.preUpdateFcn(core, eventdata);
+            end
+        end                 
         
         function obj = ViscoreUpdate(obj,core,eventdata)
             if (obj.debugMode)

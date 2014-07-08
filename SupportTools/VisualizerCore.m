@@ -76,6 +76,10 @@ classdef VisualizerCore < hgsetget
         
     end
     events
+        PreUpdateEvent
+        % If additional calculations need to be made, they can be done
+        % here.
+        
         UpdateEvent
         % Every program using viscore to get and set information about the
         % visualizer must listen to the VisualizerCore 'Update' event.
