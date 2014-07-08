@@ -59,10 +59,10 @@ classdef Link < hgsetget
         visual = [];
         
         % tracks the xdata and ydata of the visual patch object.
-        vertices = pkg_vertices([],[]);
+        vertices = pkg_vertices();
         
-        currentVertices = pkg_vertices([],[]);
-        previousVertices = pkg_vertices([],[]);
+        currentVertices = pkg_vertices();
+        previousVertices = pkg_vertices();
         
         %Define behavior when one of the links is clicked.
         
