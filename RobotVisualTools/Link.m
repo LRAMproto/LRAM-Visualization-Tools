@@ -33,7 +33,7 @@ classdef Link < hgsetget
         originAngle = 0;
         % Specifies where the object is rotated.
         originAnglePivotPoint = [0 0];
-
+        
         % specifies the curvature of drawn objects.
         cap_pct = 0;
         
@@ -59,10 +59,10 @@ classdef Link < hgsetget
         visual = [];
         
         % tracks the xdata and ydata of the visual patch object.
-        vertices = struct('xdata',[],'ydata',[]);
-               
-        currentVertices = struct('xdata',[],'ydata',[]);
-        previousVertices = struct('xdata',[],'ydata',[]);
+        vertices = pkg_vertices([],[]);
+        
+        currentVertices = pkg_vertices([],[]);
+        previousVertices = pkg_vertices([],[]);
         
         %Define behavior when one of the links is clicked.
         
@@ -120,17 +120,22 @@ classdef Link < hgsetget
             switch obj.type
                 case 'Custom'
                     if length(varargin) == 2;
-                        obj.vertices.xdata = custom_x;
-                        obj.vertices.ydata = custom_y;
+                        xdata = custom_x;
+                        ydata = custom_y;
+                        set(obj,'vertices',pkg_vertices(xdata,ydata));
                     end
+                    
                 case 'Rectangle'
                     if (obj.cap_pct == 0)
                         obj.num_points = 4;
                     end
-                    [obj.vertices.xdata, obj.vertices.ydata] = squashed_rectangle_continuous(obj.width, obj.height, obj.cap_pct, obj.num_points);
+                    [xdata,ydata] = squashed_rectangle_continuous(obj.width, obj.height, obj.cap_pct, obj.num_points);
+                    set(obj,'vertices',pkg_vertices(xdata,ydata));
                 case 'Circle'
-                    [obj.vertices.xdata,obj.vertices.ydata] = squashed_rectangle_continuous(obj.radius*2, obj.radius*2, 1, obj.num_points);
+                    [xdata,ydata] = squashed_rectangle_continuous(obj.radius*2, obj.radius*2, 1, obj.num_points);
+                    set(obj,'vertices',pkg_vertices(xdata,ydata));
             end
+            
             
         end
         % TODO: Delete deprecated Link methods to eliminate redundancy and

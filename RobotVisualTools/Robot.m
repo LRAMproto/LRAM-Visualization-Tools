@@ -92,11 +92,14 @@ classdef Robot < hgsetget
         function LoadAll(obj)
             for i = 1:length(obj.links)
                 obj.links(i).GeneratePoints;
-                % Making Struct field-by-field. Might be useful to
-                % re-define with the struct() keyword.
-                obj.links(i).currentVertices.xdata = obj.links(i).vertices.xdata+obj.links(1).origin(1);
-                obj.links(i).currentVertices.ydata = obj.links(i).vertices.ydata+obj.links(1).origin(2);
-                obj.links(i).previousVertices = obj.links(i).currentVertices;
+
+                xdata = obj.links(i).vertices.xdata+obj.links(1).origin(1);
+                ydata = obj.links(i).vertices.ydata+obj.links(1).origin(2);
+
+                set(obj.links(i),'currentVertices',pkg_vertices(xdata,ydata));
+                
+                set(obj.links(i),'previousVertices',obj.links(i).currentVertices);
+                
                 % FIXME: Put steps to transform the base object
                 % appropriately here.
 
@@ -138,7 +141,7 @@ classdef Robot < hgsetget
                 
                 xdata = child.vertices.xdata;
                 ydata = child.vertices.ydata;
-                child.previousVertices = child.currentVertices;
+                set(child,'previousVertices',child.currentVertices);
                 
                 [xdata,ydata] = matrix_rotate(xdata,ydata,child.originAngle,child.originAnglePivotPoint);
                 if ~isempty(trackingPoints)
@@ -182,8 +185,7 @@ classdef Robot < hgsetget
                     curJoint = curJoint.parentJoint;
                     
                 end
-                child.currentVertices = struct('xdata',xdata,'ydata',ydata);
-                
+                set(child,'currentVertices',pkg_vertices(xdata,ydata)); 
                 
                 if ~isequal(child.previousVertices,child.currentVertices);
                     if obj.debugMode
