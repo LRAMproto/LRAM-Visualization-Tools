@@ -1,13 +1,8 @@
 classdef VisualizerPlugin < hgsetget
-    % An experimental class to manage the operations of an individual
-    % plugin for the visualizer core.
-    
-    % If implemented, creating additional plugins would be much easier to
-    % do.
+    % This class allows for various sub-programs to connect to a
+    % VisualizerCore object.
     
     properties
-        % Tracks handles of entire program.
-        programHandles
         
         % Uniquely identifying name of program.
         name
@@ -19,6 +14,8 @@ classdef VisualizerPlugin < hgsetget
         
         % figure handle used for creating visual elements
         guiHandle
+        
+        % GUI function called by LoadGui().
         guiFcn
         
         % Core Listener
