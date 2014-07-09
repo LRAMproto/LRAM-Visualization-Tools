@@ -1,5 +1,5 @@
-classdef VisualizerCore < hgsetget
-    % VisualizerCore version 1.0 (dev)
+classdef ProgramCore < hgsetget
+    % ProgramCore version 1.0 (dev)
     % Core function for LRAM Visualizer. Manipulates base information on
     % the robot used by various sub-programs.
     %
@@ -29,7 +29,7 @@ classdef VisualizerCore < hgsetget
     end
     
     methods
-        function obj = VisualizerCore()
+        function obj = ProgramCore()
             % Constructor method.
             obj.programHandles.core = obj;
         end
@@ -82,7 +82,7 @@ classdef VisualizerCore < hgsetget
         
         UpdateEvent
         % Every program using viscore to get and set information about the
-        % visualizer must listen to the VisualizerCore 'Update' event.
+        % visualizer must listen to the ProgramCore 'Update' event.
         PostUpdateEvent
         % To avoid pulling data from an update before a set of calculations
         % are complete, the PostUpdateEvent can be used to retrieve data

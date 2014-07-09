@@ -1,4 +1,4 @@
-classdef VisualizerPlugin < hgsetget
+classdef ProgramPlugin < hgsetget
     % This class allows for various sub-programs to connect to a
     % VisualizerCore object.
     
@@ -43,7 +43,7 @@ classdef VisualizerPlugin < hgsetget
     end
     
     methods
-        function obj = VisualizerPlugin(name,core)
+        function obj = ProgramPlugin(name,core)
             results = findobj(core.plugins,'name',name);
             if (numel(results)>0)
                 error('* Running plugin already exists with this name');

@@ -6,7 +6,7 @@ function ph = caster_startup_simulink_debug
     make_caster_default_settings();
     
     % Initializes a program core to manage update operations
-    ph.core = VisualizerCore();
+    ph.core = ProgramCore();
     
     % Sets the settings file
     set(ph.core,...
