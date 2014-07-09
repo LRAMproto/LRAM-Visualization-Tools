@@ -1,4 +1,4 @@
-function gui = vis_gui_revised(plugin)
+function gui = vis_display(plugin)
 % A visual display to connect to the visualizer core.
 
 handles.plugin = plugin;
@@ -7,7 +7,7 @@ handles.plugin = plugin;
 dims = [0 0 900 600];
 
 gui = figure(...
-    'Name','vis_gui_revised',...
+    'Name','Visualizer Display',...
     'Color',[1 1 1],...
     'MenuBar','none',...
     'Units','Pixels',...
@@ -58,9 +58,9 @@ handles.plugin.core.settings.world = handles.world;
 guidata(gui, handles);
 
 function ViscoreUpdate(core, eventdata)
-results = findall(core.guiPluginHandles,'Name','vis_gui_revised');
+results = findall(core.guiPluginHandles,'Name','Visualizer Display');
 if numel(results) == 0
-    error('ViscoreUpdate in vis_gui_revised cannot find vis_gui_revised.');
+    error('ViscoreUpdate in Visualizer Display cannot find Visualizer Display.');
 end
 fig = results(1);
 handles = guidata(fig);
@@ -68,9 +68,9 @@ handles.world.UpdateVisual();
 notify(core,'PostUpdateEvent');
 
 function ViscoreShutdown(core, eventdata)
-results = findall(core.guiPluginHandles,'Name','vis_gui_revised');
+results = findall(core.guiPluginHandles,'Name','Visualizer Display');
 if numel(results) == 0
-    error('ViscoreShutdown cannot find vis_gui_revised.');
+    error('ViscoreShutdown cannot find Visualizer Display.');
 end
 fig = results(1);
 handles = guidata(fig);
