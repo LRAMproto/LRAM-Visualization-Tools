@@ -421,23 +421,27 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-function ViscoreUpdate(core, eventdata)
-results = findall(core.guiPluginHandles,'tag','vis_control_figure');
-if numel(results) == 0
+function ViscoreUpdate(core, eventdata, plugin)
+
+fig = plugin.guiPluginHandle;
+if ~ishandle(plugin.guiPluginHandle)
     error('ViscoreUpdate in vis_control cannot find vis_control.');
 end
-fig = results(1);
+
 handles = guidata(fig);
+
 set(handles.connection_status_display,'string','UPDATE PENDING');
 
 
-function ViscorePostUpdate(core, eventdata)
-results = findall(core.guiPluginHandles,'tag','vis_control_figure');
-if numel(results) == 0
+function ViscorePostUpdate(core, eventdata, plugin)
+
+fig = plugin.guiPluginHandle;
+if ~ishandle(plugin.guiPluginHandle)
     error('ViscorePostUpdate in vis_control cannot find vis_control.');
 end
-fig = results(1);
+
 handles = guidata(fig);
+
 set(handles.connection_status_display,'string','UPDATING GUI');
 set(handles.spot_color_select,'Value',...
     handles.plugin.core.settings.misc.colors.SpotColorDefault);
@@ -463,7 +467,7 @@ set(handles.connection_status_display,'string','UPDATED');
 guidata(fig,handles);
 
 
-function ViscoreShutdown(core, eventdata)
+function ViscoreShutdown(core, eventdata, plugin)
 
 function UpdateTrajectory(handles,Vi,Ri,pivot_point)
 

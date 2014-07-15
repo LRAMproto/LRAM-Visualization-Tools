@@ -57,21 +57,22 @@ handles.plugin.core.settings.world = handles.world;
 
 guidata(gui, handles);
 
-function ViscoreUpdate(core, eventdata)
-results = findall(core.guiPluginHandles,'Name','Visualizer Display');
-if numel(results) == 0
-    error('ViscoreUpdate in Visualizer Display cannot find Visualizer Display.');
+function ViscoreUpdate(core, eventdata, plugin)
+
+fig = plugin.guiPluginHandle;
+if ~ishandle(plugin.guiPluginHandle)
+    error('ViscoreUpdate in Visualizer Display cannot find Display.');
 end
-fig = results(1);
+
 handles = guidata(fig);
 handles.world.UpdateVisual();
 notify(core,'PostUpdateEvent');
 
-function ViscoreShutdown(core, eventdata)
-results = findall(core.guiPluginHandles,'Name','Visualizer Display');
-if numel(results) == 0
-    error('ViscoreShutdown cannot find Visualizer Display.');
+function ViscoreShutdown(core, eventdata, plugin)
+
+fig = plugin.guiPluginHandle;
+if ~ishandle(plugin.guiPluginHandle)
+    error('ViscoreUpdate in vis_control cannot find vis_control.');
 end
-fig = results(1);
-handles = guidata(fig);
+
 delete(fig);

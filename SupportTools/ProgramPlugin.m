@@ -107,7 +107,7 @@ classdef ProgramPlugin < hgsetget
             
             if ~isempty(obj.updateFcn)
                 % execute assigned shutdown function
-                obj.preUpdateFcn(core, eventdata);
+                obj.preUpdateFcn(core, eventdata, obj);
             end
         end                 
         
@@ -118,7 +118,7 @@ classdef ProgramPlugin < hgsetget
             
             if ~isempty(obj.updateFcn)
                 % execute assigned shutdown function
-                obj.updateFcn(core, eventdata);
+                obj.updateFcn(core, eventdata, obj);
             end
             
         end
@@ -130,7 +130,7 @@ classdef ProgramPlugin < hgsetget
             
             if ~isempty(obj.shutdownFcn)
                 % execute assigned shutdown function
-                obj.shutdownFcn(core, eventdata);
+                obj.shutdownFcn(core, eventdata, obj);
             end
         end
         
@@ -141,7 +141,7 @@ classdef ProgramPlugin < hgsetget
             
             if ~isempty(obj.postUpdateFcn)
                 % execute assigned shutdown function
-                obj.postUpdateFcn(core, eventdata);
+                obj.postUpdateFcn(core, eventdata, obj);
             end
             
         end
