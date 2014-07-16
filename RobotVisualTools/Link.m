@@ -9,7 +9,7 @@ classdef Link < hgsetget
         
         % Human Readable Name
         name = 'Default';
-        % Uniquely identifying name.
+        % DEPRECATE: Uniquely identifying name.
         tag = 'Undefined';
         % Type of link; usually Rectangle, Circle, or Custom
         type = 'Undefined';
@@ -25,12 +25,15 @@ classdef Link < hgsetget
         radius = 0;
         
         %% Specifies how link objects should be rendered visually.
+        
         % Origin at which the link is drawn. A square drawn at 0,0 will be
         % drawn with the center of the square at 0,0, with respect to the
         % relative position of the square.
         origin = [0,0];
+        
         % Angle at which the joint is drawn by default.
         originAngle = 0;
+        
         % Specifies where the object is rotated.
         originAnglePivotPoint = [0 0];
         
@@ -42,30 +45,41 @@ classdef Link < hgsetget
         num_points = 100;
         
         % Sets the fill color of the patch that is used. It defaults to
-        % black, but can be set to anything.
-        
+        % black, but can be set to anything.        
         fillColor = [0 0 0];
         
+        % Changes visibility. Recognized Values: 'on', 'off'
         visible = 'on';
-        
+
+        % Opacity of the patch object.
+        % 1.0 = completely opaque
+        % 0.5, 50% opacity,
+        % 0.0 =  100% transparent.
         faceAlpha = 1;
+        % Opacity of the edges of a patch.
+        % 1.0 = completely opaque
+        % 0.5, 50% opacity,
+        % 0.0 =  100% transparent.
         edgeAlpha = 1;
         
         % Sets the line width of all points. Must be greater than zero.
         lineWidth = 0.5;
         
         %% Runtime Defined Variables
-        % Tracks where the runtime object
+
+        % Tracks the runtime object of a patch in Figure Axes.
         visual = [];
         
         % tracks the xdata and ydata of the visual patch object.
         vertices = pkg_vertices();
         
+        % Tracks the current vertices
         currentVertices = pkg_vertices();
+
+        % Tracks the previous vertices.
         previousVertices = pkg_vertices();
         
-        %Define behavior when one of the links is clicked.
-        
+        %Define behavior when one of the links is clicked.        
         buttonDownFcn = [];
         
         % Robot object.
@@ -74,6 +88,7 @@ classdef Link < hgsetget
         % World that the link belongs to.
         world
         
+        % Tracks a set of points relative to a link's local position.
         trackingPoints = [];
         
     end
@@ -149,6 +164,7 @@ classdef Link < hgsetget
         % confusion.
         
         function ToggleVisibility(obj)
+            % Changes visibility of a joint object.
             if strcmp(obj.visible,'off')
                 obj.visible = 'on';
                 set(obj.visual,'visible','on');
@@ -171,6 +187,7 @@ classdef Link < hgsetget
         end
         
         function AddTrackingPoint(obj,name,position)
+            % Adds a new tracking point to the simulation/
             newpoint = TrackingPoint();
             set(newpoint,...
                 'name',name,...

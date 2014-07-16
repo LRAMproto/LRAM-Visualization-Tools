@@ -10,13 +10,12 @@ classdef Robot < hgsetget
         % Pieces of a robot object.
         links
         % Points of articulation allowing link objects to move.
-        joints
-        
-        jointQueue
+        joints       
         
         % For debugging purposes.
         updateStepTime = 0;
         
+        % Allows robot to output debugging messages.
         debugMode = 0
     end
     

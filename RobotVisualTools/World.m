@@ -1,27 +1,22 @@
 classdef World < hgsetget
-    % A Class describing the world in which all joints and links are populated.
-    % Note that there does not have to be one world per program; a control
-    % interface using this object could have a different world than a display,
-    % for example.
+    % A class describing an environment in which Robots are placed and
+    % rendered in.
     %
     % Currently inherits from hgsetget to allow for set and get operations.
     
     properties
         %% Statically Defined Variables
         
-        % Specifies name of world.
+        % Specifies name of world.        
         name = 'World'
         
         %% Runtime Defined Variables
         
         % This is an axes object that has been created before the World
-        % is loaded.
-        
+        % is loaded.        
         displayAxis
         
-        % all Robot objects in a simulation. Once fully implemented, joints
-        % and links will no longer be tracked by the world, but by the
-        % robots.
+        % all Robot objects in a simulation.
         robots
         
         % autoUpdate set to 1 to automatically update the world whenever a
@@ -29,10 +24,17 @@ classdef World < hgsetget
         % manually. This might be helpful if you wanted to change a ton of
         % variables before rendering.
         autoUpdate = 1;
-
-        debugMode = 0;
         
+        % Debugging mode allows for specialized console messages to be
+        % displayed wherever necessary.
+        debugMode = 0;
+
+        % records the amount of time it takes to update the world. Useful
+        % for optimization purposes.        
         updateTimes = [];
+
+        % Records the average time to update the world. Useful for
+        % optimization purposes.        
         avgUpdateTime = 0;
         
     end
@@ -122,16 +124,19 @@ classdef World < hgsetget
         end
         %% Display Functions
         function DisplayJoints(obj)
+            % Displays information on all joint objects within a world.
             for i=1:length(obj.robots)
                 obj.robots(i).DisplayJoints();
             end
         end
         function DisplayLinks(obj)
+            % Displays information on all link objects within a world.
             for i=1:length(obj.robots)
                 obj.robots(i).DisplayLinks();
             end            
         end
     	function DisplayAll(obj)
+            % Displays information on all objects.
             obj.DisplayLinks;
             obj.DisplayJoints;
         end
