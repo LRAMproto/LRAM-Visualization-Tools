@@ -70,7 +70,7 @@ classdef ProgramCore < hgsetget
             if (obj.debugMode)
                 fprintf('## Core saving settings to [%s]\n',filename);
             end
-            settings = obj.settings;
+
             save(filename,'-struct','settings');
         end
         
