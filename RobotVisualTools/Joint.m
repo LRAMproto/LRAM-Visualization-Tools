@@ -45,6 +45,12 @@ classdef Joint < hgsetget
         % World in which it is populated.
         world
         
+        % Default value: no transformations are given when the matrix
+        % changes direction.
+        
+        localMatrix = eye(4,4);
+        worldMatrix = eye(4,4);
+        
     end
     
     methods
@@ -57,6 +63,28 @@ classdef Joint < hgsetget
                 error('Joint name must be a string');
             end
         end
+        
+        function MakeLocalMatrix(obj)
+            % sets rotation stuff
+            obj.localMatrix(1,1) = cos(obj.angle);
+            obj.localMatrix(1,2) = sin(obj.angle);
+            obj.localMatrix(2,1) = -sin(obj.angle);
+            obj.localMatrix(2,2) = cos(obj.angle);
+            % sets x pivot point
+            obj.localMatrix(4,1)=obj.pivotPoint(1);
+            % sets y pivot point
+            obj.localMatrix(4,2)=obj.pivotPoint(2);            
+            
+        end
+        
+        function MakeWorldMatrix(obj)
+            if isempty(obj.parentJoint);
+                parentWorldMatrix = eye(4,4);
+            else
+                parentWorldMatrix = obj.parentJoint.worldMatrix;
+            end
+            obj.worldMatrix = obj.localMatrix * parentWorldMatrix;
+        end        
         
         function Rotate(obj, theta)
             % Rotates the joint to a specific angle.
@@ -100,9 +128,9 @@ classdef Joint < hgsetget
         function MoveXY(obj,x,y)
             if isfloat([x,y]) && isequal(size([x,y]),[1,2])
                 obj.position = [x,y];
-            if ~isempty(obj.world) && obj.world.autoUpdate == 1
-                obj.world.UpdateVisual();
-            end
+                if ~isempty(obj.world) && obj.world.autoUpdate == 1
+                    obj.world.UpdateVisual();
+                end
             else
                 error('invalid input');
             end

@@ -132,6 +132,10 @@ classdef Robot < hgsetget
             isUpdated = zeros(1,length(obj.joints));
 
             for i = 1:length(obj.joints)
+                % TODO: Define 4D Matrix Rotation Here to replace previous
+                % things.
+                obj.joints(i).MakeWorldMatrix();
+
                 if obj.updateStepTime > 0
                     pause(obj.updateStepTime)
                 end
@@ -251,7 +255,7 @@ classdef Robot < hgsetget
             obj.RankJoints();
             for i=1:length(obj.joints)
                 for j = i:length(obj.joints)
-                    if obj.joints(j).rank > obj.joints(i).rank
+                    if obj.joints(j).rank < obj.joints(i).rank
                         temp = obj.joints(i);
                         obj.joints(i) = obj.joints(j);
                         obj.joints(j) = temp;
@@ -266,7 +270,8 @@ classdef Robot < hgsetget
             % indvidually.
             obj.joints = joints;
             for i=1:length(obj.joints)
-                obj.joints(i).robot = obj;                
+                obj.joints(i).robot = obj;
+                obj.joints(i).MakeLocalMatrix();
             end            
             obj.SortJoints();
         end

@@ -110,8 +110,7 @@ classdef Link < hgsetget
                 set(obj.visual,'FaceColor',val);
             end
             
-        end
-        
+        end      
         
         function GeneratePoints(obj,varargin)
             % Generates a set default set of coordinates for the link out
@@ -169,7 +168,7 @@ classdef Link < hgsetget
                 'name',name,...
                 'parentLink',obj,...
                 'localPosition',position);
-            obj.trackingPoints = [obj.trackingPoints,newpoint];
+            obj.trackingPoints = union(obj.trackingPoints,newpoint);
         end
         
     end
