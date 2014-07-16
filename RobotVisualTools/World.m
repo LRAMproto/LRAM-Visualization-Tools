@@ -94,7 +94,8 @@ classdef World < hgsetget
             if obj.debugMode == 1
                 updateTime = toc;
                 obj.updateTimes = [obj.updateTimes,updateTime];
-                obj.avgUpdateTime = sum(obj.updateTimes)/length(obj.updateTimes);
+                obj.avgUpdateTime = ...
+                    sum(obj.updateTimes) / length(obj.updateTimes);
             end            
             
         end

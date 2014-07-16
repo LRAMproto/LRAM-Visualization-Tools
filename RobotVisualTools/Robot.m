@@ -1,20 +1,17 @@
 classdef Robot < hgsetget
-    % Keeps track of all information related to a single robot. This would
-    % allow multiple robots doing different things to be represented in the
-    % same simulation.
-    
-    % TODO: refactor code to make unique robot objects.
-    
+    % Keeps track of all informaiton related to a single robot. This allows
+    % multiple robots to be represented in the same simulation.   
+   
     properties
         % Uniquely identifying name of a robot that exists in a world.
         name
-        % Environment that the robot exists in.
+        % Environment that the robot is rendered  in.
         world
         % Pieces of a robot object.
         links
         % Points of articulation allowing link objects to move.
         joints
-
+        
         jointQueue
         
         % For debugging purposes.
@@ -28,7 +25,7 @@ classdef Robot < hgsetget
             % Generates a robot object given the nanme, links, and joints.
             obj.name = name;
             obj.links = links;
-            obj.PutJoints(joints);          
+            obj.PutJoints(joints);
             for i= 1:length(links)
                 links(i).robot = obj;
             end
@@ -92,19 +89,21 @@ classdef Robot < hgsetget
         function LoadAll(obj)
             for i = 1:length(obj.links)
                 obj.links(i).GeneratePoints;
-
+                
                 xdata = obj.links(i).vertices.xdata+obj.links(1).origin(1);
                 ydata = obj.links(i).vertices.ydata+obj.links(1).origin(2);
-
-                set(obj.links(i),'currentVertices',pkg_vertices(xdata,ydata));
                 
-                set(obj.links(i),'previousVertices',obj.links(i).currentVertices);
+                set(obj.links(i),...
+                    'currentVertices',pkg_vertices(xdata,ydata));
+                
+                set(obj.links(i),...
+                    'previousVertices',obj.links(i).currentVertices);
                 
                 % FIXME: Put steps to transform the base object
                 % appropriately here.
-
+                
                 % FIXME: End Transformation code
-
+                
                 % Loads the base shape (not transformed by joints) into the
                 % world.
                 
@@ -128,33 +127,45 @@ classdef Robot < hgsetget
         end
         
         function UpdateVisual(obj)
-
+            
             isUpdated = zeros(1,length(obj.joints));
-
+            
             for i = 1:length(obj.joints)
                 % TODO: Define 4D Matrix Rotation Here to replace previous
                 % things.
                 obj.joints(i).MakeWorldMatrix();
-
+                
                 if obj.updateStepTime > 0
                     pause(obj.updateStepTime)
                 end
                 
                 child = obj.joints(i).childData;
-                trackingPoints = child.trackingPoints;
+                trackingPts = child.trackingPoints;
                 
                 xdata = child.vertices.xdata;
                 ydata = child.vertices.ydata;
                 set(child,'previousVertices',child.currentVertices);
                 
-                [xdata,ydata] = matrix_rotate(xdata,ydata,child.originAngle,child.originAnglePivotPoint);
-                if ~isempty(trackingPoints)
-                    for pointNo = 1:length(trackingPoints)
-                        [trackingPoints(pointNo).worldPosition(1),trackingPoints(pointNo).worldPosition(2)] = ...
-                            matrix_rotate(trackingPoints(pointNo).localPosition(1),trackingPoints(pointNo).localPosition(2),...
-                            child.originAngle,child.originAnglePivotPoint);
-                        trackingPoints(pointNo).worldPosition(1) = trackingPoints(pointNo).localPosition(1)+child.origin(1);
-                        trackingPoints(pointNo).worldPosition(2) = trackingPoints(pointNo).localPosition(2)+child.origin(2);
+                [xdata,ydata] = matrix_rotate(...
+                    xdata,...
+                    ydata,...
+                    child.originAngle,...
+                    child.originAnglePivotPoint);
+                if ~isempty(trackingPts)
+                    for pointNo = 1:length(trackingPts)
+                        [trackingPts(pointNo).worldPosition(1),...
+                            trackingPts(pointNo).worldPosition(2)] = ...
+                            matrix_rotate(...
+                            trackingPts(pointNo).localPosition(1),...
+                            trackingPts(pointNo).localPosition(2),...
+                            child.originAngle,...
+                            child.originAnglePivotPoint);
+                        trackingPts(pointNo).worldPosition(1) =...
+                            trackingPts(pointNo).localPosition(1)...
+                            + child.origin(1);
+                        trackingPts(pointNo).worldPosition(2) = ...
+                            trackingPts(pointNo).localPosition(2)...
+                            + child.origin(2);
                     end
                 end
                 
@@ -165,31 +176,46 @@ classdef Robot < hgsetget
                 
                 while ~isempty(curJoint)
                     % FIXME: Verify that this transformation is accurate.
-                    [xdata,ydata] = matrix_rotate(xdata,ydata,curJoint.angle,curJoint.pivotPoint);
+                    [xdata,ydata] = matrix_rotate(...
+                        xdata,...
+                        ydata,...
+                        curJoint.angle,...
+                        curJoint.pivotPoint);
                     xdata = xdata + curJoint.origin(1);
                     ydata = ydata + curJoint.origin(2);
                     xdata = xdata + curJoint.position(1);
                     ydata = ydata + curJoint.position(2);
                     
                     
-                    if ~isempty(trackingPoints)
-                        for pointNo = 1:length(trackingPoints)
+                    if ~isempty(trackingPts)
+                        for pointNo = 1:length(trackingPts)
                             [...
-                                trackingPoints(pointNo).worldPosition(1),...
-                                trackingPoints(pointNo).worldPosition(2)...
+                                trackingPts(pointNo).worldPosition(1),...
+                                trackingPts(pointNo).worldPosition(2)...
                                 ] = ...
-                                matrix_rotate((trackingPoints(pointNo).worldPosition(1)),(trackingPoints(pointNo).worldPosition(2)),...
-                                curJoint.angle,curJoint.pivotPoint);
-                            trackingPoints(pointNo).worldPosition(1) = trackingPoints(pointNo).worldPosition(1)+curJoint.origin(1);
-                            trackingPoints(pointNo).worldPosition(2) = trackingPoints(pointNo).worldPosition(2)+curJoint.origin(2);
-                            trackingPoints(pointNo).worldPosition(1) = trackingPoints(pointNo).worldPosition(1)+curJoint.position(1);
-                            trackingPoints(pointNo).worldPosition(2) = trackingPoints(pointNo).worldPosition(2)+curJoint.position(2);
+                                matrix_rotate(...
+                                trackingPts(pointNo).worldPosition(1),...
+                                trackingPts(pointNo).worldPosition(2),...
+                                curJoint.angle,...
+                                curJoint.pivotPoint);
+                            trackingPts(pointNo).worldPosition(1) =...
+                                trackingPts(pointNo).worldPosition(1)...
+                                + curJoint.origin(1);
+                            trackingPts(pointNo).worldPosition(2) = ...
+                                trackingPts(pointNo).worldPosition(2)...
+                                + curJoint.origin(2);
+                            trackingPts(pointNo).worldPosition(1) =...
+                                trackingPts(pointNo).worldPosition(1)...
+                                + curJoint.position(1);
+                            trackingPts(pointNo).worldPosition(2) = ...
+                                trackingPts(pointNo).worldPosition(2)...
+                                + curJoint.position(2);
                         end
                     end
                     curJoint = curJoint.parentJoint;
                     
                 end
-                set(child,'currentVertices',pkg_vertices(xdata,ydata)); 
+                set(child,'currentVertices',pkg_vertices(xdata,ydata));
                 
                 if ~isequal(child.previousVertices,child.currentVertices);
                     if obj.debugMode
@@ -199,11 +225,11 @@ classdef Robot < hgsetget
                     set(child.visual,'XData',xdata,'YData',ydata);
                 end
             end
-
+            
         end
         
         function DisplayJoints(obj)
-            % Displays verbose data for all joints in a world.           
+            % Displays verbose data for all joints in a world.
             disp('Joints:');
             for i = 1:length(obj.joints)
                 disp(obj.joints(i));
@@ -223,7 +249,7 @@ classdef Robot < hgsetget
             obj.DisplayLinks;
             obj.DisplayJoints;
         end
-
+        
         %% Joint Addition/Removal Operations
         % These operations allow for joints to be sorted in such a way that
         % more efficient updating operations take place.
@@ -243,7 +269,7 @@ classdef Robot < hgsetget
                         cj = [];
                     end
                     
-                end               
+                end
                 
             end
             
@@ -261,10 +287,10 @@ classdef Robot < hgsetget
                         obj.joints(j) = temp;
                     end
                 end
-                        
+                
             end
         end
-
+        
         function PutJoints(obj,joints)
             % Accepts a set of joint objects rather than adding and sorting
             % indvidually.
@@ -272,7 +298,7 @@ classdef Robot < hgsetget
             for i=1:length(obj.joints)
                 obj.joints(i).robot = obj;
                 obj.joints(i).MakeLocalMatrix();
-            end            
+            end
             obj.SortJoints();
         end
         
@@ -288,7 +314,7 @@ classdef Robot < hgsetget
             joint.robot = [];
             obj.joints = setdiff(obj.joints,joint);
             obj.SortJoints();
-        end        
+        end
         
     end
     
