@@ -27,8 +27,12 @@ classdef Animation < hgsetget
         end
         
         function RenderFrame(obj)
-            filename = sprintf('%s/%s%d.png',obj.saveDirectory,obj.name,obj.imgCount);
-            print(obj.displayFigure,filename,'-dpng');            
+%             filename = sprintf('%s/%s%d.png',obj.saveDirectory,obj.name,obj.imgCount);
+%             print(obj.displayFigure,filename,'-dpng');
+            
+            imgCountStr = sprintf('%d',obj.imgCount);
+            filename = fullfile(obj.saveDirectory,strcat(obj.name,imgCountStr,'.svg'));
+            plot2svg(filename,obj.displayFigure);
             obj.imgCount = obj.imgCount + 1;
             if ~isa(filename,'char')
                 error('frame filename not captured correctly.');
@@ -42,12 +46,14 @@ classdef Animation < hgsetget
         
         function OutputToVideo(obj)
             
-            filepath = [obj.saveDirectory,'\',obj.videoFile];
+            filepath = obj.videoFile;
             vidObj = VideoWriter(filepath);
             set(vidObj,'FrameRate',obj.frameRate);
             open(vidObj);
             for k = 1:length(obj.frames)
-                curFrame = imread(obj.frames{k});
+                tempFrame = fullfile(obj.saveDirectory,'temp.jpeg');
+                svg2jpg(obj.frames{k},tempFrame);
+                curFrame = imread(tempFrame);
                 writeVideo(vidObj,curFrame);
             end
             close(vidObj);

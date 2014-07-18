@@ -65,7 +65,6 @@ for i=1:100
     an.RenderFrame();
 end
 fprintf('Rendering finished.\n');
-disp(an.frames);
 an.OutputToVideo();
 
 cd(previous);
