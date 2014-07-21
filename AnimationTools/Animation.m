@@ -31,13 +31,15 @@ classdef Animation < hgsetget
 %             print(obj.displayFigure,filename,'-dpng');
             
             imgCountStr = sprintf('%d',obj.imgCount);
-            filename = fullfile(obj.saveDirectory,strcat(obj.name,imgCountStr,'.svg'));
-            plot2svg(filename,obj.displayFigure);
+            tempFrame = fullfile(obj.saveDirectory,'temp.svg');            
+            plot2svg(tempFrame, obj.displayFigure);
+            newFrame = fullfile(obj.saveDirectory,strcat(obj.name, imgCountStr,'.jpeg'));
+            svg2jpg(tempFrame, newFrame);
             obj.imgCount = obj.imgCount + 1;
-            if ~isa(filename,'char')
+            if ~isa(newFrame,'char')
                 error('frame filename not captured correctly.');
             end
-            obj.frames{obj.imgCount} = filename;
+            obj.frames{obj.imgCount} = newFrame;
         end
         
         function RunUpdateFcn(obj)
@@ -51,8 +53,7 @@ classdef Animation < hgsetget
             set(vidObj,'FrameRate',obj.frameRate);
             open(vidObj);
             for k = 1:length(obj.frames)
-                tempFrame = fullfile(obj.saveDirectory,'temp.jpeg');
-                svg2jpg(obj.frames{k},tempFrame);
+                tempFrame = obj.frames{k};
                 curFrame = imread(tempFrame);
                 writeVideo(vidObj,curFrame);
             end
