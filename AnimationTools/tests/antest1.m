@@ -59,7 +59,7 @@ fprintf('Beginning Rendering\n');
 
 
 an = Animation('AnTest',pwd, handles.fig);
-set(an,'updateFcn',@frameUpdateFcn);
+set(an,'videoFile','AnTest.avi','updateFcn',@frameUpdateFcn);
 for i=1:100
     an.RunUpdateFcn();
     an.RenderFrame();
