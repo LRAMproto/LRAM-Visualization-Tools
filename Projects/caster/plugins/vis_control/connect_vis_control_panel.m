@@ -1,4 +1,4 @@
-function program_handles = connect_vis_display(ph)
+function program_handles = connect_vis_control_panel(ph)
 % Connects the visualizer display to the main program.
 ph.Plugins.ControlPanel = ProgramPlugin('Control Panel',ph.core);
 set(ph.Plugins.ControlPanel,'debugMode',0);
