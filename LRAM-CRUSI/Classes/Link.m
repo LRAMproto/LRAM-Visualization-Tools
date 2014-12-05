@@ -5,9 +5,11 @@ classdef Link < hgsetget
     properties
         parent = []
         transMtx = makehgtform()
-        xdata = []
-        ydata = []
-        zdata = []
+        
+        xdata = [-1,5,5,-1];
+        ydata = [-1,-1,1,1]*.25;
+        zdata = [0,0,0,0];
+
         origin = [0,0,0]
         scale = [1,1,1]
         xrotate = 0
@@ -28,8 +30,8 @@ classdef Link < hgsetget
         function UpdateVisual(self, mtx)        
             self.transMtx = mtx * makehgtform('translate',self.origin) ...
                 * makehgtform('xrotate',self.xrotate)...
-                * makehgtform('yrotate',self.xrotate)...
-                * makehgtform('zrotate',self.xrotate)...
+                * makehgtform('yrotate',self.yrotate)...
+                * makehgtform('zrotate',self.zrotate)...
                 ;
             
             for i = 1:length(self.children)
@@ -37,10 +39,28 @@ classdef Link < hgsetget
             end
         end
         
-        function points = GetWorldPoints(self)            
-            xdata = self.transMtx * 
-            ydata = 
-            zdata = 
+        function [xdata, ydata, zdata] = GetWorldPoints(self)
+            
+            xdata = zeros(1,length(self.xdata));
+            ydata = zeros(1,length(self.ydata));
+            zdata = zeros(1,length(self.zdata));            
+            
+            for k = 1:length(self.xdata)
+                vtx = ...
+                    self.transMtx * ...
+                    [...
+                    self.xdata(k);...
+                    self.ydata(k);...
+                    self.zdata(k)...
+                    ;...
+                    1 ...
+                    ];
+                vtx = vtx';
+                xdata(k) = vtx(1);
+                ydata(k) = vtx(2);
+                zdata(k) = vtx(3);
+                
+            end
         end
     end
     
