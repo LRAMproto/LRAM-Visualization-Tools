@@ -1,27 +1,26 @@
 function linktest()
 
 x = Link();
-numSubLinks = 100;
-links = [x];
-prevLink = x;
 
-for k=1:numSubLinks
-   lnk = Link(prevLink);
-   set(lnk,'xrotate',deg2rad(k));
-   set(lnk,'yrotate',deg2rad(k));
-   set(lnk,'zrotate',deg2rad(k));   
-   set(lnk,'origin',[.1 0 0])
-   links = [links,lnk];
-   prevLink = lnk;
-end
+y = Link(x);
+set(y,'xrotate',deg2rad(30));
+set(y,'origin',[5 0 0]);
+
+z = Link(y);
+set(z,'yrotate',deg2rad(22));
+set(z,'origin',[5 0 0]);
+
+a = Link(z);
+set(a,'zrotate',deg2rad(122));
+set(a,'origin',[5 0 0]);
+links = [x,y,z,a];
 
 for i = 1:length(links)
 disp(links(i))
 disp(links(i).transMtx)
 end
-idty = makehgtform();
 
-x.UpdateVisual(idty)
+x.UpdateVisual(makehgtform())
 ax = axes('xlim',[-1 10],'ylim',[-1 10]');
 set(ax,'xlimmode','manual','ylimmode','manual');
 
