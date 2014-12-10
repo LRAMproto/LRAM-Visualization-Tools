@@ -57,27 +57,27 @@ classdef Robot < hgsetget
         function LinkObjects(obj)
             % links runtime Link objects to runtime Joint objects
             for i = 1:length(obj.joints)
-                parent_found = 0;
-                child_found = 0;
+                parent_found = false;
+                child_found = false;
                 for j = 1:length(obj.links)
                     if strcmp(obj.links(j).name, obj.joints(i).parent)
-                        parent_found = 1;
+                        parent_found = true;
                         obj.joints(i).parentData = obj.links(j);
                     end
                     if strcmp(obj.links(j).name, obj.joints(i).child)
-                        child_found = 1;
+                        child_found = true;
                         obj.joints(i).childData = obj.links(j);
                     end
-                    if parent_found == 1 && child_found == 1
+                    if parent_found == true && child_found == true
                         break;
                     end
                 end
-                if parent_found == 0
+                if parent_found == false
                     disp('Check Parent Links for ');
                     disp(obj.joints(i));
                     error('Parent Link Not Found');
                 end
-                if child_found == 0
+                if child_found == false
                     disp('Check Child Links for ');
                     disp(obj.joints(i));
                     error('Child Link Not Found');
@@ -85,6 +85,7 @@ classdef Robot < hgsetget
             end
             
         end
+        
         function LoadAll(obj)
             for i = 1:length(obj.links)
                 obj.links(i).GeneratePoints;
