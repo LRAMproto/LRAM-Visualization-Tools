@@ -15,6 +15,9 @@ lnk2.SetColor([0 1 0]);
 
 jnt12 = RDTools.Joint();
 jnt12.SetParent(lnk1);
+jnt12.SetOrigin([0 5 0]);
+jnt12.SetPivotPoint([0 0 0]);
+jnt12.SetZRotate(deg2rad(15));
 
 jnt12.AddChild(lnk2);
 lnk1.AddChild(jnt12);
@@ -35,13 +38,14 @@ robot.SetRoot(lnk1);
 assert(robot.root == lnk1);
 
 lnk1.SetShape('square',5);
-lnk2.SetShape('rectangle',[1 10]);
+lnk2.SetShape('rectangle',[10 1]);
 
 sf = .50;
 w = 1024*sf;
 h = 1024*sf;
 
 fig = figure('position',[0 0 w h]);
+
 ax = axes('parent',fig,...
     'xlim',[-10 10],...
     'ylim',[-10 10],...

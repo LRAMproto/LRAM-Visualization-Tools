@@ -22,7 +22,8 @@ classdef Robot < hgsetget
         
         function LoadToAxis(self, ax)
             assert(~isempty(self.root))
-            self.root.GenVisual(ax);            
+            self.root.GenVisual(ax);  
+            self.root.UpdateVisual(makehgtform());            
         end
     end
     
