@@ -4,7 +4,7 @@ classdef Joint < hgsetget
     
     properties
         parent = [];
-        children = []
+        children = [];
     end
     
     methods
@@ -15,6 +15,13 @@ classdef Joint < hgsetget
         function SetParent(self, parent)
             self.parent = parent;
         end
+        
+        function GenVisual(self, ax)
+           for k=1:length(self.children)
+               self.children(k).GenVisual(ax);
+           end
+        end
+        
     end
     
 end

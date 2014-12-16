@@ -7,15 +7,22 @@ classdef Robot < hgsetget
     end
     
     methods
-        function AddLinks(obj, links)
-            obj.links = union(obj.links, links);
+        function AddLinks(self, links)
+            assert(isa(links,'RDTools.Link'));
+            self.links = union(self.links, links);
         end
-        function AddJoints(obj, joints)
-            obj.joints = union(obj.joints, joints);            
+        function AddJoints(self, joints)
+            assert(isa(joints,'RDTools.Joint'));            
+            self.joints = union(self.joints, joints);            
         end
         
-        function SetRoot(obj, root)
-           obj.root = root; 
+        function SetRoot(self, root)
+           self.root = root; 
+        end
+        
+        function LoadToAxis(self, ax)
+            assert(~isempty(self.root))
+            self.root.GenVisual(ax);            
         end
     end
     
