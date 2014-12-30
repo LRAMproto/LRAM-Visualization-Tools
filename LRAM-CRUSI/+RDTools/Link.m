@@ -11,6 +11,10 @@ classdef Link < hgsetget
         childJoints = [];
         visual = [];
         color = [0 0 0];
+        alpha = 1;
+        capPct = 0;
+        numPoints = 100;
+        
     end
     
     methods
@@ -32,12 +36,17 @@ classdef Link < hgsetget
                 'parent',ax,...
                 'xdata',self.xdata,...
                 'ydata',self.ydata,...
+                'facealpha',self.alpha,...
                 'facecolor',self.color...
                 );
             
             for k = 1:length(self.childJoints)
                 self.childJoints(k).GenVisual(ax);
             end
+        end
+        
+        function SetCapPct(self, pct)
+            self.capPct = pct;
         end
         
         function GenShapeData(self)
@@ -47,15 +56,28 @@ classdef Link < hgsetget
             xData = [];
             yData = [];
             
+            if (self.capPct > 0)
+                self.numPoints = 100;
+            end
+            
             switch(self.shapeType)
                 case 'square'
-                    assert(length(self.dims) == 1);
-                    xData = [-1 1 1 -1]*self.dims(1)/2;
-                    yData = [-1 -1 1 1]*self.dims(1)/2;
+                    [xData, yData] = ...
+                        squashed_rectangle_continuous(...
+                        self.dims(1), self.dims(1), self.capPct, self.numPoints ...
+                        );
                 case 'rectangle'
                     assert(length(self.dims) == 2);
-                    xData = [-1 1 1 -1]*self.dims(1)/2;
-                    yData = [-1 -1 1 1]*self.dims(2)/2;
+                    [xData, yData] = ...
+                        squashed_rectangle_continuous(...
+                        self.dims(1), self.dims(2), self.capPct, self.numPoints ...
+                        );
+                case 'circle'
+                    assert(length(self.dims) == 1);
+                    [xData, yData] = ...
+                        squashed_rectangle_continuous(...
+                        self.dims(1)*2, self.dims(1)*2, 1, self.numPoints ...
+                        );
                     
             end
             
@@ -65,66 +87,38 @@ classdef Link < hgsetget
         
         function UpdateVisual(self, mtx)
             
-            points = [];
-            
-            for k=1:length(self.xdata)
-                points = [points; [self.xdata(k),self.ydata(k)]];
-            end
-            
-            newxdata = [];
-            newydata = [];
-            
-            for k=1:size(points,1)
-                newPoint = mtx * [points(k,1:2) 0 1]';
-                newPoint = newPoint';
-                newxdata = [newxdata, newPoint(1)];
-                newydata = [newydata, newPoint(2)];
-            end
-            
-            set(self.visual,'xdata',newxdata,'ydata',newydata)
-            
-            for k=1:length(self.childJoints)
-                self.childJoints(k).UpdateVisual(mtx);
-            end
+%            for m=1:size(self.xdata,1)
+%                disp('going through visual update')
+                points = [];
+                
+                for k=1:length(self.xdata)
+                    points = [points; [self.xdata(k),self.ydata(k)]];
+                end
+                
+                newxdata = [];
+                newydata = [];
+                
+                for k=1:size(points,1)
+                    newPoint = mtx * [points(k,1:2) 0 1]';
+                    newPoint = newPoint';
+                    newxdata = [newxdata, newPoint(1)];
+                    newydata = [newydata, newPoint(2)];
+                end
+                
+                
+                
+                set(self.visual,'xdata',newxdata,'ydata',newydata)
+                
+                for k=1:length(self.childJoints)
+                    self.childJoints(k).UpdateVisual(mtx);
+                end
+%            end
         end
         
         function SetColor(self, color)
             self.color = color;
         end
         
-        function ApplyPatchTForm(self, data)
-            pat = self.visual;
-            
-            if data.hasChanged
-                fprintf('... Update...\n');
-                points = [];
-                
-                for k=1:length(data.xdata)
-                    points = [points; [data.xdata(k),data.ydata(k)]];
-                end
-                TOriginR = makehgtform('zrotate',data.originRotate(3));
-                TOrigin = makehgtform('translate',data.origin);
-                R = makehgtform('zrotate',data.zrotate);
-                T = makehgtform('translate',data.pivotPoint);
-                M = T * R * inv(T) * TOrigin * TOriginR;
-                
-                newxdata = [];
-                newydata = [];
-                
-                for k=1:size(points,1)
-                    newPoint = M * [points(k,1:2) 0 1]';
-                    newPoint = newPoint';
-                    newxdata = [newxdata, newPoint(1)];
-                    newydata = [newydata, newPoint(2)];
-                end
-                
-                set(pat,'xdata',newxdata,'ydata',newydata)
-                data.hasChanged = false;
-            else
-                fprintf('... Not Updated...\n');
-            end
-            
-        end
         
     end
     

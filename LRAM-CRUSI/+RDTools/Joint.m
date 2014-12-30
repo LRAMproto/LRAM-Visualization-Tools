@@ -35,8 +35,10 @@ classdef Joint < hgsetget
         
         function UpdateVisual(self, mtx)
             TOrigin = makehgtform('translate',self.origin);
+            TPivot = makehgtform('translate',self.pivotPoint);
             ZRotate = makehgtform('zrotate',self.zRotate);
-            mtx = mtx * ZRotate * TOrigin;
+            
+            mtx = mtx * TPivot * ZRotate * inv(TPivot) * TOrigin;
             
             for k=1:length(self.children)
                 self.children(k).UpdateVisual(mtx);
