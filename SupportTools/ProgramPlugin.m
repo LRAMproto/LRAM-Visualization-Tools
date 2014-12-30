@@ -70,7 +70,8 @@ classdef ProgramPlugin < hgsetget
         
         function RemoveFromPlugins(obj)
             if(obj.debugMode)
-                fprintf('* Removing plugin [%s] from core plugins.\n',obj.name);
+                fprintf('* Removing plugin [%s] from core plugins.\n',...
+                    obj.name);
             end
             % Removes the plugin from the core.
             obj.core.plugins = setdiff(obj.core.plugins,obj);
