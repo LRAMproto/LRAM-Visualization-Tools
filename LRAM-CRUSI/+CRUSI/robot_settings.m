@@ -1,5 +1,34 @@
 function robot_settings(plugin)
+%old_setup(plugin);
+h = struct();
+h = InitializeRobot(h);
+h = SetupRobotLinks(h);
+h = SetupRobotJoints(h);
+h = LinkRobotLinksToJoints(h);
+h = WriteToPluginSettings(h, plugin);
+end
 
+function h = WriteToPluginSettings(h, plugin)
+    plugin.core.settings.robot = h.robot;
+    
+end
+
+function h = InitializeRobot(h)
+h.robot = RDTools.Robot();
+end
+
+function h = SetupRobotLinks(h)
+cage = RDTools.Link();
+% Load cage visual to shape.
+h.robot.SetRoot(cage);
+end
+function h = SetupRobotJoints(h)
+end
+
+function h = LinkRobotLinksToJoints(h)
+end
+
+function old_setup(plugin)
 robot = RDTools.Robot();
 
 % Initialization Tests
@@ -102,10 +131,10 @@ end
 
 
 function val = pmeasure(servo)
-    val = servo.joint.zRotate;
+val = servo.joint.zRotate;
 
 end
 
 function pupdate(servo, val)
-    servo.joint.SetZRotate(val);
+servo.joint.SetZRotate(val);
 end
