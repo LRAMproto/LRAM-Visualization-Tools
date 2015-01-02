@@ -2,7 +2,7 @@ function slider_test(plugin)
 %SLIDER_TEST Summary of this function goes here
 %   Detailed explanation goes here
 
-fig = init(plugin);disp(fig);
+fig = init(plugin);
 end
 
 function testfunct(menu, eventdata)
