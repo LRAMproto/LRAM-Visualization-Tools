@@ -12,7 +12,7 @@ function fig = init(plugin)
 fig = figure();
 GenHandles(fig, plugin);
 if has_two_monitors()
-maximize_second_monitor(fig);
+    maximize_second_monitor(fig);
 end
 set(plugin, 'postUpdateFcn',@display);
 
@@ -32,7 +32,7 @@ h.ax_height_pct = .90;
 h.ar = h.w/h.h;
 
 set(fig, ...
-    'menubar','none',...    
+    'menubar','none',...
     'name','Visual Display',...
     'position',[50 50 h.w h.h],...
     'resizefcn', @reshape);
@@ -62,12 +62,12 @@ if ~isempty(h)
     h.ar = h.w/h.h;
     
     if h.ar > 1
-    axdims = [h.h *     h.ax_height_pct, h.h *     h.ax_height_pct];    
-    position = [(h.w - axdims(1))/2, (h.h - axdims(2))/2, axdims];
-    
+        axdims = [h.h *     h.ax_height_pct, h.h *     h.ax_height_pct];
+        position = [(h.w - axdims(1))/2, (h.h - axdims(2))/2, axdims];
+        
     else
-    axdims = [h.w *     h.ax_height_pct, h.w *     h.ax_height_pct];    
-    position = [(h.w - axdims(1))/2, (h.h - axdims(2))/2, axdims];        
+        axdims = [h.w *     h.ax_height_pct, h.w *     h.ax_height_pct];
+        position = [(h.w - axdims(1))/2, (h.h - axdims(2))/2, axdims];
     end
     %disp('resizing');
     set(h.ax,...
