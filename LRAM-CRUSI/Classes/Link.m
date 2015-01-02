@@ -38,9 +38,6 @@ classdef Link < hgsetget
         end
         
         function points = GetWorldPoints(self)            
-            xdata = self.transMtx * 
-            ydata = 
-            zdata = 
         end
     end
     
