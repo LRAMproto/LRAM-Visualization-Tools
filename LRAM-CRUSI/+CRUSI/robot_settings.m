@@ -1,5 +1,9 @@
 function robot_settings(plugin)
 %old_setup(plugin);
+new_setup(plugin);
+end
+
+function new_setup(plugin)
 h = struct();
 h = InitializeRobot(h);
 h = SetupRobotLinks(h);
@@ -9,8 +13,8 @@ h = WriteToPluginSettings(h, plugin);
 end
 
 function h = WriteToPluginSettings(h, plugin)
-    plugin.core.settings.robot = h.robot;
-    
+plugin.core.settings.robot = h.robot;
+
 end
 
 function h = InitializeRobot(h)
@@ -19,9 +23,15 @@ end
 
 function h = SetupRobotLinks(h)
 cage = RDTools.Link();
+framepoints = makeframepoints();
+
+cage.SetShape('custom',framepoints.xdata, framepoints.ydata);
 % Load cage visual to shape.
+links = [cage];
+h.robot.AddLinks(links);
 h.robot.SetRoot(cage);
 end
+
 function h = SetupRobotJoints(h)
 end
 
