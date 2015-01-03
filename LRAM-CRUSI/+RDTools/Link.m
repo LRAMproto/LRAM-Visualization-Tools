@@ -14,7 +14,7 @@ classdef Link < hgsetget
         alpha = 1;
         capPct = 0;
         numPoints = 100;
-        
+        shapeData = [];
     end
     
     methods
@@ -27,11 +27,15 @@ classdef Link < hgsetget
         function SetShape(self, name, varargin)
             assert(isa(name, 'char'));
             self.shapeType = name;
+            self.shapeData = varargin;
             self.dims = varargin{1};
             self.GenShapeData();
         end
         
         function GenVisual(self, ax)
+            disp('Generating Visual');
+            disp(self.xdata);
+            disp(self.ydata);
             self.visual = patch(...
                 'parent',ax,...
                 'xdata',self.xdata,...
@@ -61,6 +65,12 @@ classdef Link < hgsetget
             end
             
             switch(self.shapeType)
+                case 'custom'
+                    disp('custom shape entered');
+                    xData = self.shapeData{1};
+                    disp(size(xData));
+                    yData = self.shapeData{2};
+                    disp(size(yData));
                 case 'square'
                     [xData, yData] = ...
                         squashed_rectangle_continuous(...
@@ -86,33 +96,36 @@ classdef Link < hgsetget
         end
         
         function UpdateVisual(self, mtx)
-            
-%            for m=1:size(self.xdata,1)
-%                disp('going through visual update')
+            newxdata = [];
+            newydata = [];
+            for m=1:size(self.xdata,1)
+                disp('going through visual update')
                 points = [];
                 
                 for k=1:length(self.xdata)
-                    points = [points; [self.xdata(k),self.ydata(k)]];
+                    points = [points; [self.xdata(m,k),self.ydata(m,k)]];
                 end
                 
-                newxdata = [];
-                newydata = [];
+                newxdataP = [];
+                newydataP = [];
                 
                 for k=1:size(points,1)
                     newPoint = mtx * [points(k,1:2) 0 1]';
                     newPoint = newPoint';
-                    newxdata = [newxdata, newPoint(1)];
-                    newydata = [newydata, newPoint(2)];
+                    newxdataP = [newxdataP, newPoint(1)];
+                    newydataP = [newydataP, newPoint(2)];
                 end
-                
-                
-                
-                set(self.visual,'xdata',newxdata,'ydata',newydata)
-                
-                for k=1:length(self.childJoints)
-                    self.childJoints(k).UpdateVisual(mtx);
-                end
-%            end
+                newxdata = [newxdata; newxdataP];
+                newydata = [newydata; newydataP];
+
+            end
+                disp(size(newxdata));
+                disp(size(newydata));            
+            set(self.visual,'xdata',newxdata,'ydata',newydata)
+            
+            for k=1:length(self.childJoints)
+                self.childJoints(k).UpdateVisual(mtx);
+            end
         end
         
         function SetColor(self, color)
