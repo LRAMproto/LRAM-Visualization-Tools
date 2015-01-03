@@ -55,7 +55,7 @@ lnk3.SetCapPct(0.1);
 
 jnt01 = RDTools.Joint();
 jnt01.AddChild(lnk1);
-jnt01.SetOrigin([0 0 0]);
+jnt01.SetOrigin([0 0 0]/10);
 
 lnk1.SetColor([1 0 0]);
 lnk2.SetColor([0 1 0]);
@@ -64,7 +64,7 @@ lnk3.SetColor([0 0 1]);
 jnt12 = RDTools.Joint();
 jnt12.SetParent(lnk1);
 
-jnt12.SetOrigin([5 0 0]);
+jnt12.SetOrigin([5 0 0]/10);
 jnt12.SetPivotPoint([0 0 0]);
 jnt12.SetZRotate(deg2rad(45));
 jnt12.AddChild(lnk2);
@@ -76,8 +76,8 @@ assert(length(jnt12.children)==1);
 jnt23 = RDTools.Joint();
 
 jnt23.SetParent(lnk2);
-jnt23.SetOrigin([10 0 0]);
-jnt23.SetPivotPoint([5 0 0]);
+jnt23.SetOrigin([10 0 0]/10);
+jnt23.SetPivotPoint([5 0 0]/10);
 jnt23.SetZRotate(deg2rad(20));
 jnt23.AddChild(lnk3);
 
@@ -106,10 +106,10 @@ assert(length(robot.links) == length(links));
 
 robot.SetRoot(jnt01);
 
-lnk1.SetShape('square',5);
+lnk1.SetShape('square',5/10);
 %lnk1.SetShape('circle',5);
-lnk2.SetShape('rectangle',[10 1]);
-lnk3.SetShape('rectangle',[10 1]);
+lnk2.SetShape('rectangle',[10 1]/10);
+lnk3.SetShape('rectangle',[10 1]/10);
 
 %sf = .50;
 %w = 1024*sf;
