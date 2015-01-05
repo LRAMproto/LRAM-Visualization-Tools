@@ -1,7 +1,7 @@
 classdef Robot < hgsetget
     % Keeps track of all informaiton related to a single robot. This allows
-    % multiple robots to be represented in the same simulation.   
-   
+    % multiple robots to be represented in the same simulation.
+    
     properties
         % Uniquely identifying name of a robot that exists in a world.
         name
@@ -10,7 +10,7 @@ classdef Robot < hgsetget
         % Pieces of a robot object.
         links
         % Points of articulation allowing link objects to move.
-        joints       
+        joints
         
         % For debugging purposes.
         updateStepTime = 0;
@@ -57,27 +57,27 @@ classdef Robot < hgsetget
         function LinkObjects(obj)
             % links runtime Link objects to runtime Joint objects
             for i = 1:length(obj.joints)
-                parent_found = 0;
-                child_found = 0;
+                parent_found = false;
+                child_found = false;
                 for j = 1:length(obj.links)
                     if strcmp(obj.links(j).name, obj.joints(i).parent)
-                        parent_found = 1;
+                        parent_found = true;
                         obj.joints(i).parentData = obj.links(j);
                     end
                     if strcmp(obj.links(j).name, obj.joints(i).child)
-                        child_found = 1;
+                        child_found = true;
                         obj.joints(i).childData = obj.links(j);
                     end
-                    if parent_found == 1 && child_found == 1
+                    if parent_found == true && child_found == true
                         break;
                     end
                 end
-                if parent_found == 0
+                if parent_found == false
                     disp('Check Parent Links for ');
                     disp(obj.joints(i));
                     error('Parent Link Not Found');
                 end
-                if child_found == 0
+                if child_found == false
                     disp('Check Child Links for ');
                     disp(obj.joints(i));
                     error('Child Link Not Found');
@@ -85,6 +85,7 @@ classdef Robot < hgsetget
             end
             
         end
+        
         function LoadAll(obj)
             for i = 1:length(obj.links)
                 obj.links(i).GeneratePoints;
@@ -185,32 +186,8 @@ classdef Robot < hgsetget
                     xdata = xdata + curJoint.position(1);
                     ydata = ydata + curJoint.position(2);
                     
+                    obj.UpdateTrackingPoints(trackingPts, curJoint);
                     
-                    if ~isempty(trackingPts)
-                        for pointNo = 1:length(trackingPts)
-                            [...
-                                trackingPts(pointNo).worldPosition(1),...
-                                trackingPts(pointNo).worldPosition(2)...
-                                ] = ...
-                                matrix_rotate(...
-                                trackingPts(pointNo).worldPosition(1),...
-                                trackingPts(pointNo).worldPosition(2),...
-                                curJoint.angle,...
-                                curJoint.pivotPoint);
-                            trackingPts(pointNo).worldPosition(1) =...
-                                trackingPts(pointNo).worldPosition(1)...
-                                + curJoint.origin(1);
-                            trackingPts(pointNo).worldPosition(2) = ...
-                                trackingPts(pointNo).worldPosition(2)...
-                                + curJoint.origin(2);
-                            trackingPts(pointNo).worldPosition(1) =...
-                                trackingPts(pointNo).worldPosition(1)...
-                                + curJoint.position(1);
-                            trackingPts(pointNo).worldPosition(2) = ...
-                                trackingPts(pointNo).worldPosition(2)...
-                                + curJoint.position(2);
-                        end
-                    end
                     curJoint = curJoint.parentJoint;
                     
                 end
@@ -222,6 +199,35 @@ classdef Robot < hgsetget
                     end
                     
                     set(child.visual,'XData',xdata,'YData',ydata);
+                end
+            end
+            
+        end
+        
+        function UpdateTrackingPoints(obj, trackingPts, curJoint)
+            if ~isempty(trackingPts)
+                for pointNo = 1:length(trackingPts)
+                    [...
+                        trackingPts(pointNo).worldPosition(1),...
+                        trackingPts(pointNo).worldPosition(2)...
+                        ] = ...
+                        matrix_rotate(...
+                        trackingPts(pointNo).worldPosition(1),...
+                        trackingPts(pointNo).worldPosition(2),...
+                        curJoint.angle,...
+                        curJoint.pivotPoint);
+                    trackingPts(pointNo).worldPosition(1) =...
+                        trackingPts(pointNo).worldPosition(1)...
+                        + curJoint.origin(1);
+                    trackingPts(pointNo).worldPosition(2) = ...
+                        trackingPts(pointNo).worldPosition(2)...
+                        + curJoint.origin(2);
+                    trackingPts(pointNo).worldPosition(1) =...
+                        trackingPts(pointNo).worldPosition(1)...
+                        + curJoint.position(1);
+                    trackingPts(pointNo).worldPosition(2) = ...
+                        trackingPts(pointNo).worldPosition(2)...
+                        + curJoint.position(2);
                 end
             end
             

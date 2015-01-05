@@ -15,7 +15,7 @@ classdef ProgramCore < hgsetget
         settingsFile = []
         
         % Keeps track of the settings during runtime for the program.
-        settings
+        settings = struct()
         
         % Identifies all plugins connected to the core.
         plugins = [];
@@ -61,7 +61,7 @@ classdef ProgramCore < hgsetget
             if (obj.debugMode)
                 fprintf('## Core loading settings from [%s]\n',filename);
             end
-            obj.settingsFile =  filename;
+            obj.settingsFile = filename;
             obj.settings = load(obj.settingsFile);
         end
         
