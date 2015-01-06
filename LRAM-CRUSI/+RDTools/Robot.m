@@ -8,26 +8,28 @@ classdef Robot < hgsetget
         servos = [];
         linkMap = containers.Map();
         jointMap = containers.Map();
-
+        
     end
     
     methods
         function AddLinks(self, links)
             assert(isa(links,'RDTools.Link') || isa(links,'RDTools.Joint'));
             self.links = union(self.links, links);
-            for k=1:length(self.links)
-                self.linkMap(self.links(k).name) = self.links(k);
-            end            
+            if self.linkMap.Count > 0
+                for k=1:length(self.links)
+                    self.linkMap(self.links(k).name) = self.links(k);
+                end
+            end
         end
         
         function AddJoints(self, joints)
-            assert(isa(joints,'RDTools.Joint'));            
+            assert(isa(joints,'RDTools.Joint'));
             self.joints = union(self.joints, joints);
-            
-            for k=1:length(self.joints)
-                self.jointMap(self.joints(k).name) = self.joints(k);
-            end                       
-            
+            if self.jointMap.Count > 0
+                for k=1:length(self.joints)
+                    self.jointMap(self.joints(k).name) = self.joints(k);
+                end
+            end
         end
         
         function ConnectObjects(self)
@@ -40,18 +42,18 @@ classdef Robot < hgsetget
         end
         
         function SetRoot(self, root)
-           self.root = root; 
+            self.root = root;
         end
         
         function AddServos(self, servos)
-           self.servos = union(self.servos, servos); 
+            self.servos = union(self.servos, servos);
         end
         
         function LoadToAxis(self, ax)
             assert(~isempty(self.root))
             self.displayAxis = ax;
-            self.root.GenVisual(ax);  
-            self.UpdateVisual();            
+            self.root.GenVisual(ax);
+            self.UpdateVisual();
         end
         
         function UpdateVisual(self)
