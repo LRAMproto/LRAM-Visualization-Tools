@@ -2,7 +2,10 @@ classdef Link < hgsetget
     %LINK Summary of this class goes here
     %   Detailed explanation goes here
     
-    properties
+    properties        
+        % URDF-Specific Stats
+        name = [];
+        
         shapeType = [];
         dims = [];
         xdata = [];
@@ -18,6 +21,12 @@ classdef Link < hgsetget
     end
     
     methods
+        
+        function obj = Link(parent_joint)
+            if exist('parent_joint', 'var')
+                parent_joint.AddChild(obj);
+            end
+        end
         
         function AddChild(self, joint)
             assert(isa(joint,'RDTools.Joint'));

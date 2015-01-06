@@ -3,14 +3,32 @@ classdef Joint < hgsetget
     %   Detailed explanation goes here
     
     properties
+        % URDF-Specific Stats
+        name = [];        
+        type = [];
+        
+        parentLink = [];
+        childLink = [];
+        
+        originXYZ = zeros(3);        
+        originRPY = zeros(3);
+        axisXYZ = zeros(3);        
+        
         parent = [];
         children = [];
         origin = [0 0 0];
         pivotPoint = [0 0 0];
         zRotate = 0;
+        zRotateLimit = 2*pi;
     end
     
     methods
+        function obj = Joint(parent_link)
+            if exist('parent_link', 'var')
+                parent_link.AddChild(obj);
+            end
+        end
+        
         function AddChild(self, lnk)
             self.children = [self.children, lnk];
         end
