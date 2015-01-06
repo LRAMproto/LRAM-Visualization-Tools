@@ -26,10 +26,30 @@ cage = RDTools.Link();
 framepoints = makeframepoints();
 
 cage.SetShape('custom',framepoints.xdata, framepoints.ydata);
+cage.SetColor([0.6 0.6 0.6]);
 % Load cage visual to shape.
-links = [cage];
+robot_plate_to_frame = RDTools.Joint(cage);
+robot_plate = RDTools.Link(robot_plate_to_frame);
+robot_plate.SetShape('square',24*2.54/100);
+robot_plate_to_frame.SetOrigin(...
+    [...
+    12*2.54/100 ...
+    (36-12)*2.54/100 ...
+    0 ...
+    ] ...
+    );
+links = [cage, robot_plate];
+joints = [robot_plate_to_frame];
 h.robot.AddLinks(links);
+h.robot.AddJoints(joints);
 h.robot.SetRoot(cage);
+
+s1 = ECTools.Servo(robot_plate_to_frame);
+s1.RegMeasureFcn('position',@slider_pmeasure);
+s1.RegUpdateFcn('position',@slider_pupdate);
+servos = [s1];
+h.robot.AddServos(servos);
+
 end
 
 function h = SetupRobotJoints(h)
@@ -139,6 +159,15 @@ plugin.core.settings.robot = robot;
 
 end
 
+function val = slider_pmeasure(servo)
+val = servo.joint.origin(2);
+
+end
+
+function slider_pupdate(servo, val)
+origin = get(servo.joint, 'origin');
+set(servo.joint, 'origin', [origin(1), val, origin(3)]);
+end
 
 function val = pmeasure(servo)
 val = servo.joint.zRotate;
