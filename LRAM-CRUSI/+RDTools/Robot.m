@@ -15,21 +15,27 @@ classdef Robot < hgsetget
         function AddLinks(self, links)
             assert(isa(links,'RDTools.Link') || isa(links,'RDTools.Joint'));
             self.links = union(self.links, links);
-            if self.linkMap.Count > 0
                 for k=1:length(self.links)
+                    if (~isempty(self.links(k).name))
                     self.linkMap(self.links(k).name) = self.links(k);
+                    end
                 end
-            end
+            
         end
         
         function AddJoints(self, joints)
             assert(isa(joints,'RDTools.Joint'));
             self.joints = union(self.joints, joints);
-            if self.jointMap.Count > 0
-                for k=1:length(self.joints)
+            for k=1:length(self.joints)
+                if (~isempty(self.links(k).name))
                     self.jointMap(self.joints(k).name) = self.joints(k);
                 end
             end
+            
+        end
+        
+        function SetRootLinkByName(self, name)
+           self.SetRoot(self.linkMap(name));
         end
         
         function ConnectObjects(self)
