@@ -1,4 +1,4 @@
-function urdf2robot(filename)
+function robot = urdf2robot(filename)
 % Converts a URDF representation to a useable RDTools robot.
 urdf = xml2struct(filename);
 
@@ -17,7 +17,16 @@ if isfield(urdf.robot, 'link')
         newLink = RDTools.Link();
         newLink.name = links{k}.Attributes.name;
         RDlinks = [RDlinks, newLink];
-    end
+        
+        % Add visual elements
+        if isfield(urdf.robot.link{k}, 'visual')
+            if isfield(urdf.robot.link{k}.visual.geometry,'cylinder')
+                urdf.robot.link{k}.visual.geometry.cylinder.Attributes
+            end
+        end
+        
+    end    
+    
     robot.AddLinks(RDlinks);
 end
 
